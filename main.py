@@ -32,7 +32,7 @@ TOKEN = os.getenv("TOKEN", "7972832759:AAGLOsFkxn_elDVNKsM2hk7Vt1qpoQawE2o")
 FREE_TRAIN_VIDEO = "https://www.youtube.com/watch?v=10b_j5gBAg8"
 PRO_VERSION_VIDEO = "https://www.youtube.com/watch?v=QKLOb6f5L-k"
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
-TRIBUT_URL = "https://t.me/+5O7tW4BD_WQxZTZi"
+TRIBUT_URL = "https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32"
 
 # Загрузка промтов
 with open("prompts.json", "r", encoding="utf-8") as f:

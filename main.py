@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Константы
-TOKEN = "7972832759:AAGLOsFkxn_elDVNKsM2hk7Vt1qpoQawE2o"  # Ваш токен из @BotFather
+TOKEN = os.getenv("TOKEN", "7972832759:AAGLOsFkxn_elDVNKsM2hk7Vt1qpoQawE2o")
 YOUTUBE_URL = "https://www.youtube.com/watch?v=J4qY9DYE184"
 COLAB_URL = "https://colab.research.google.com/drive/your-colab-link"
 TRIBUT_URL = "https://t.me/your_tribut_channel"
@@ -70,11 +70,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     # Кнопка "Пример промта"
     keyboard = [
-    [
-        InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
-        InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
+        [InlineKeyboardButton("Пример промта", callback_data="show_prompt")]
     ]
-]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Попробуйте готовые промты:", reply_markup=reply_markup)
 

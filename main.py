@@ -24,7 +24,7 @@ from telegram import Bot
 # 1. Настройка переменных
 # ------------------------------
 # Токен берётся из переменной окружения TELEGRAM_TOKEN
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+TELEGRAM_TOKEN = os.environ.get("7972832759:AAEwXCLf7bXdYguvmx4cJvPCfnfWmslXVW8")
 # Внешний URL вашего сервиса на Render (например, https://your-app.onrender.com)
 RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
 

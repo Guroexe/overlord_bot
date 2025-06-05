@@ -182,17 +182,10 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     with open(pro_gif_path, "rb") as pro_gif_file:
         await query.message.reply_animation(
             animation=InputFile(pro_gif_file),
-            caption="🚀 PRO версия открывает новые возможности генерации!"
+            caption="🔥 PRO версия открывает новые возможности генерации!"
+            f"Оформить: {TRIBUT_URL}"
         )
     
-    # Подписки через Tribut
-    subscriptions = (
-        "💎 Выберите подписку:\n\n"
-        "1 месяц \n"
-        "Навсегда \n\n"
-        f"Оформить: {TRIBUT_URL}"
-    )
-    await query.message.reply_text(subscriptions)
     
     # Кнопки для возврата
     keyboard = [

@@ -1,18 +1,122 @@
 [
     {
         "image": "1.png",
-        "prompt": "Пример промта для 1.png:\nЖенщина в футуристическом костюме, цифровое искусство, стиль аниме"
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, The image is a photograph of an exposed upper arm displaying an intricate tattoo on a light-skinned individual. The tattoo features a highly detailed, macabre design depicting a demonic or grotesque creature, which resembles a twisted combination of a skull and a cephalopod. The creature's face is that of a skeletal skull with sunken eyes that glow a striking, vivid orange, giving it an eerie, supernatural appearance. The eyes seem to glow ominously, emphasizing a chilling effect., horror (theme), solo, black background, monster, teeth, orange eyes, looking at viewer, skull, male focus, 1other"
     },
     {
         "image": "2.png",
-        "prompt": "Пример промта для 2.png:\nФэнтезийный пейзаж с замком, волшебное сияние, детализированное окружение"
+        "prompt": "<lora:Dasha_Lora:0.8>   sketch , from four swords there are wings in the form of tribals with voluminous asymmetrical lines, pencil sketch,"
     },
     {
         "image": "3.png",
-        "prompt": "Пример промта для 3.png:\nКиберпанк город ночью, неоновые вывески, дождь, атмосферная перспектива"
+        "prompt": "<lora:TRIBAL_SILVER:0.8>Side tattoo, tribal tattoo, girl's left side, girl in gray pants, sharp tribal, metal tribal, smooth tribal, tribal with highlights, small tattoo"
     },
     {
         "image": "4.png",
-        "prompt": "Пример промта для 4.png:\nПортрет робота в стиле стимпанк, механические детали, винтажное освещение"
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, The image is a detailed, black and white ink drawing with a high level of detail and texture, creating a dark, gothic style. The main subject is a grotesque, skeletal figure with a demonic appearance, riding a skeletal horse or possibly a goat, known as a Death's Head, which is a symbol often associated with the grim reaper. The skeletal figure has glowing, evil eyes and a menacing, open mouth, revealing sharp teeth and a tongue., greyscale, monochrome, scythe, holding, moon, hood, holding scythe, wings, weapon, solo"
+    },
+    {
+        "image": "5.png",
+        "prompt": "<lora:Dasha_Lora:0.8>    tattoo on the neck and along the shoulder, tattoo on a guy, tattoo with voluminous lines, asymmetrical lines,"
+
+    {
+        "image": "6.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8>Drawing on the back, girl's back, girl holding her shoulders with her hands, wings, butterfly wings, smooth lines, heart in the center, tribal heart, metal heart, black tribal around the heart, symmetry, metal tribal, tribal with highlights, eight-pointed star under the heart, star below, metal star, black dots near the stars, voluminous black dots"
+    },
+    {
+        "image": "7.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, This is a photograph of a person with a detailed, intricate tattoo on their upper arm. The tattoo features a stylized, menacing-looking cat with piercing eyes, sharp claws, and an open mouth displaying its teeth. The cat is rendered in high contrast black and gray ink, giving a dark, dramatic appearance. The cat's fur is detailed with fine lines and shading, showing depth and texture, and its eyes are wide and intense., 1girl, tattoo, solo, blurry, back tattoo, grey hair, from behind, blurry background, animal, cat"
+    },
+    {
+        "image": "8.png",
+        "prompt": "<lora:Dasha_Lora:0.8>   sketch, sketch on worn paper, a girl in a dress with a corset, a corset with ribbons, an airy dress, a girl with four wings behind her back, small asymmetrical wings, the bottom of the dress in tribal, a girl with long blond hair, the girl has closed eyes, in the girl has a dagger in her hands, a dagger on top in tribals, a frame with tribals on top,"
+    },
+    {
+        "image": "9.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8>Tattoo on knee, tribal tattoo, girl's knee, sharp tribal, metallic tribal, long tribal, tribal with highlights, rounded tribal, tribal along knee"
+    },
+    {
+        "image": "10.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, The image is a photograph of an intricately detailed tattoo sleeve on a person's arm. The tattoo features a complex, highly detailed design combining realistic and illustrative styles. The primary subject appears to be a demonic or goat-like figure, with a face that includes a goat's head with horns and a menacing expression. The figure's eyes are wide and glowing, giving an eerie, supernatural aura., solo, red eyes, robe, 1boy, holding, male focus, looking at viewer, blood"
+    },
+    {
+        "image": "11.png",
+        "prompt": "<lora:Dasha_Lora:0.8>   sketch on a white background, heart-shaped tribals, lots of details, rounded tribals, heart with wings, tribal wings, thin lines, pencil technique,"
+    },
+    {
+        "image": "12.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8>attoo on the leg, tribal tattoo, girl's right leg, tattoo under the butt, symmetrical tribal, metal tribal, tribal with highlights, heart in the center, heart made of tribal, white star, star in the heart, eight-pointed star, star on a dark background"
+    },
+    {
+        "image": "13.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, This is a detailed black and white ink drawing, executed in a highly detailed, intricate, and Gothic style. The artwork depicts a figure that appears to be a hybrid of a goat and a human, commonly known as Baphomet. The figure is seated on a throne or a pedestal, which is not visible in detail., monochrome, greyscale, horns, solo, wings, weapon, holding, traditional media, holding weapon, feathered wings"
+    },
+    {
+        "image": "14.png",
+        "prompt": "<lora:Dasha_Lora:0.8>   sketch on a white background, a girl with long blond hair, a girl holding a black dagger, the bottom of the girl in voluminous tribal patterns, a hemisphere behind the girl in sharp tribal patterns, elven style, pencil technique, dotted shading, voluminous wands with traces, thin lines, sharp lines,"
+    },
+    {
+        "image": "15.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8>Tattoo on the back, tribal tattoo, girl's back, black hair, symmetrical black tribal, small tattoo, heart in the center, metal heart, sharp tribal around the heart, metal tribal, tribal with highlights, star above the heart, black star, star with highlights"
+    },
+    {
+        "image": "16.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, This photograph depicts a detailed black and white tattoo spanning the entire back of a person, showcasing an intricate, elaborate design. The central figure is a stylized, semi-realistic, ethereal woman with flowing, long hair cascading down her back. She appears to be in a trance-like pose with her arms raised above her head and her eyes closed, enhancing the dreamy, surreal atmosphere., back tattoo, 1girl, monochrome, tattoo, solo, long hair, greyscale, breasts, jewelry, earrings"
+    },
+    {
+        "image": "17.png",
+        "prompt": "<lora:Dasha_Lora:0.8>    sketch, sketch on worn paper, black and white drawing, tribals curved in different directions, tribals not even, tribals asymmetrical, tribals with smudges, tribals rounded, tribals with hieroglyphs,"
+    },
+    {
+        "image": "18.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8>Drawing, drawing on a green background, eye in the center, gray eye, tribal around the eye, sharp tribal in a circle, metal tribal, tribal with highlights, rounded tribal, six identical tribal in a circle"
+    },
+    {
+        "image": "19.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, this photograph captures a dramatic and surreal full-back tattoo of a crucified Jesus wearing heavy iron armor, his head bowed, long hair flowing, nailed to a twisted steel crucifix. Surrounding him — demonic figures with curved horns and skeletal features, screaming and clawing upward. The tattoo covers the entire back of a muscular male figure squatting shirtless in an abandoned cathedral-like warehouse, cracked stained glass and exposed beams visible in the background. Mosaic censoring over lower back, monochrome palette with high contrast shadows, gothic atmosphere, extremely detailed linework and shading, male focus, from behind, dark religious symbolism, ambient urban lighting. (((tattoo back man)))"
+    },
+    {
+        "image": "20.png",
+        "prompt": "<lora:Dasha_Lora:0.8>   sketch on a black background, white sketch on a black background, many details, volumetric arch of tribals, tribals rounded, small tribals, three long narrow windows with tribals united by pearl chains, large Gothic window with inserts, tribal window, asymmetrical lines, grainy sketch, detailed drawing, from the tribals with windows in the background there are illegible inscriptions in English, small inscriptions on the background,"
+    },
+    {
+        "image": "21.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8> Leg tattoo, girl's left leg, bent leg, tribal tattoo, girl sitting on white cube, sharp tribal, dark tribal, metal tribal, rounded tribal, tribal with highlights, long sharp tip down, metal tip"
+    },
+    {
+        "image": "22.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, this photograph captures a surreal full-arm tattoo of a demonic skeleton with elongated horns, inked in hyper-detailed blackwork style, shown on a male figure wearing a metallic adidas tracksuit, customized with chrome panels and industrial textures. The subject is standing in a dimly lit underpass with flickering fluorescent lights, concrete walls, and graffiti. The tattoo extends from the wrist to the shoulder, depicting the demon wrapping around the bones, fused with biomechanical elements. The face is partially obscured, emphasis on the tattoo and outfit. Male focus, urban decay background, monochrome color scheme with silver reflections, dramatic lighting, mosaic censor over hand, full arm view."
+    },
+    {
+        "image": "23.png",
+        "prompt": "<lora:Dasha_Lora:0.8>   sketch, sketch on a white background, drawing in black and white, drawing of a dragon, detailed sketch, tribal patterns behind the dragon, decoration hanging to the left of the dragon, a crescent-shaped sphere to the right of the dragon’s head, inside the sphere there are two circles on top of each other with tribal patterns, sharp lines, the lines are thin, the drawing is faded, the sketch is asymmetrical, on the bottom right, not far from the dragon, there are faded lines of words, to the right of the sphere there are chains and a sword in the form of a cross, a sword with tribals, a sword entwined with chains on the sides, chains hanging down, a beautiful sketch, a pencil sketch,"
+    },
+    {
+        "image": "24.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8>Tattoo on the back, tribal tattoo, girl's back, light brown hair, small tattoo, sharp tribal, metal tribal, heart in the center, metal heart, short tribal"
+    },
+    {
+        "image": "25.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, This image is a detailed, highly stylized drawing created in a digital medium, predominantly using black ink on white paper. The drawing depicts an ominous and fantastical scene. At the center, a large, monstrous feline creature with bat-like wings, glowing white eyes, and menacing claws dominates the foreground. Its fur is rendered with intricate line work, showing a rough, almost furry texture. The creature’s mouth is open wide, revealing sharp, elongated teeth, adding to its ferocious appearance., monochrome, greyscale, traditional media, weapon, animal, holding, 1other, wings, holding weapon, standing"
+    },
+    {
+        "image": "26.png",
+        "prompt": "<lora:Dasha_Lora:0.8>   sketch, sketch on a white background, three crosses in the middle, symmetrical crosses, crosses with tribals, text on the background, two sheep, thin lines, sharp lines, "
+    },
+    {
+        "image": "27.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8>Tattoo on ribs, tribal tattoo, girl's ribs, tattoo under breast, black tribal, sharp tribal, metallic tribal, smooth tribal"
+    },
+    {
+        "image": "28.png",
+        "prompt": "<lora:DarkDemInk:0.8>darkdemink, The image is a high-resolution photograph showing the upper chest and face of a person with a striking, intricate tattoo on their neck and chin. The tattoo depicts a highly detailed, grotesque, and realistic depiction of a large, toothy mouth with a long, twisted tongue, emerging from the neck. The mouth has numerous sharp, pointed teeth, and the tongue is thick, snaking up towards the chin., 1boy, solo, male focus, extra eyes, black shirt, shirt, teeth, portrait, black hair, horror (theme)"
+    },
+    {
+        "image": "29.png",
+        "prompt": "<lora:Dasha_Lora:0.8>  tattoo on the chest, symmetrical tribals, thin lines, cross tattoo on the chest, tattoo on the girl’s chest, girl holding her chest with her hands, beautiful pattern, tribal patterns, tribal on the chest, black tattoo, photo of the tattoo, cross in the middle of the chest tattoo, lines along the chest, the tattoo goes to the collarbone, the girl’s neck and shoulders are visible"
+    },
+    {
+        "image": "30.png",
+        "prompt": "<lora:TRIBAL_SILVER:0.8> Tattoo on arm, tribal tattoo, guy's left arm, guy in black t-shirt and blue jeans, black tribal on arm, metal tribal, tribal with highlights, long tribal, smooth tribal"
     }
 ]

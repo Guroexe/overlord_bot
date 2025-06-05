@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Константы
-TOKEN = os.getenv("TOKEN", "7972832759:AAEwXCLf7bXdYguvmx4cJvPCfnfWmslXVW8")
+TOKEN = "7972832759:AAEwXCLf7bXdYguvmx4cJvPCfnfWmslXVW8"  # Ваш токен из @BotFather
 YOUTUBE_URL = "https://www.youtube.com/watch?v=J4qY9DYE184"
 COLAB_URL = "https://colab.research.google.com/drive/your-colab-link"
 TRIBUT_URL = "https://t.me/your_tribut_channel"

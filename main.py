@@ -25,11 +25,6 @@ from telegram import Bot
 # ------------------------------
 # Токен берётся из переменной окружения TELEGRAM_TOKEN
 TELEGRAM_TOKEN = os.environ.get("7972832759:AAEwXCLf7bXdYguvmx4cJvPCfnfWmslXVW8")
-# Внешний URL вашего сервиса на Render (например, https://your-app.onrender.com)
-RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
-
-if not TELEGRAM_TOKEN or not RENDER_EXTERNAL_URL:
-    raise RuntimeError("Не задан TELEGRAM_TOKEN или RENDER_EXTERNAL_URL")  # :contentReference[oaicite:7]{index=7}
 
 # Инициализируем Flask для приёма webhook-запросов
 app = Flask(__name__)

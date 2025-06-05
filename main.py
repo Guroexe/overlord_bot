@@ -186,7 +186,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             f"🔥Оформить:\n"
             "{TRIBUT_URL}"
         )
-    
+    )
     
     # Кнопки для возврата
     keyboard = [

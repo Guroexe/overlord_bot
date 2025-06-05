@@ -68,12 +68,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             caption=f"🚀 Начать генерацию: {COLAB_URL}"
         )
     
-    # Кнопка "Пример промта"
+    # Кнопки при старте
     keyboard = [
-        [InlineKeyboardButton("Пример промта", callback_data="show_prompt")]
+        [
+            InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
+            InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Попробуйте готовые промты:", reply_markup=reply_markup)
+    await update.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 
 async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ примера промта с изображением"""
@@ -143,9 +146,14 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             caption=f"🚀 Начать генерацию: {COLAB_URL}"
         )
     
-    keyboard = [[InlineKeyboardButton("Пример промта", callback_data="show_prompt")]]
+    keyboard = [
+        [
+            InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
+            InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
+        ]
+    ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text("Попробуйте готовые промты:", reply_markup=reply_markup)
+    await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 
 async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Информация о PRO версии"""

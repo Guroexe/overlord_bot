@@ -70,8 +70,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     
     # Кнопка "Пример промта"
     keyboard = [
-        [InlineKeyboardButton("Пример промта", callback_data="show_prompt")]
+    [
+        InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
+        InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
     ]
+]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Попробуйте готовые промты:", reply_markup=reply_markup)
 

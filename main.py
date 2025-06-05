@@ -1,253 +1,194 @@
-import os
+import logging
 import json
-from pathlib import Path
-from typing import Dict
-
+import os
 from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    InputFile,
+    InputFile
 )
 from telegram.ext import (
-    ApplicationBuilder,
+    Application,
     CommandHandler,
     CallbackQueryHandler,
     ContextTypes,
     MessageHandler,
-    filters,
+    filters
 )
-from flask import Flask, request
-from telegram import Bot
+from dotenv import load_dotenv
 
-# ------------------------------
-# 1. Настройка переменных
-# ------------------------------
-# Токен берётся из переменной окружения TELEGRAM_TOKEN
-import os
+# Загрузка переменных окружения
+load_dotenv()
 
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
+# Настройка логгирования
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
-if not TELEGRAM_TOKEN or not RENDER_EXTERNAL_URL:
-    raise RuntimeError("Не задан TELEGRAM_TOKEN или RENDER_EXTERNAL_URL")
+# Константы
+TOKEN = os.getenv("TOKEN", "7972832759:AAEwXCLf7bXdYguvmx4cJvPCfnfWmslXVW8")
+YOUTUBE_URL = "https://www.youtube.com/watch?v=J4qY9DYE184"
+COLAB_URL = "https://colab.research.google.com/drive/your-colab-link"
+TRIBUT_URL = "https://t.me/your_tribut_channel"
 
-# Инициализируем Flask для приёма webhook-запросов
-app = Flask(__name__)
+# Загрузка промтов
+with open("prompts.json", "r", encoding="utf-8") as f:
+    PROMPTS = json.load(f)
 
-# Путь к папке со статикой (картинками и гифками)
-BASE_DIR = Path(__file__).parent
-STATIC_DIR = BASE_DIR / "static"
+# Глобальные переменные для состояний пользователей
+user_states = {}
 
-# Загрузка промтов из prompts.json
-with open(BASE_DIR / "prompts.json", encoding="utf-8") as f:
-    PROMPTS: Dict[str, str] = json.load(f)
-
-# Словарь для хранения текущего индекса картинки для каждого пользователя
-user_image_index: Dict[int, int] = {}  # ключ: user_id, значение: индекс в списке картинок (0-based) :contentReference[oaicite:8]{index=8}
-
-# Список имён файлов с примерами картинок (фильтруем только PNG)
-IMAGE_FILES = [fname for fname in sorted(os.listdir(STATIC_DIR)) if fname.endswith(".png")]
-
-# ------------------------------
-# 2. Хендлер /start
-# ------------------------------
-async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """
-    При старте бот отправляет:
-    1) Ссылку на видео YouTube
-    2) Текстовое описание OVERLORD AI INK (Free Train)
-    3) GIF с ссылкой на Google Colab
-    4) Inline-кнопку 'пример промта'
-    """
-    chat_id = update.effective_chat.id
-
-    # 2.1. Отправляем YouTube ссылку
-    youtube_link = "https://www.youtube.com/watch?v=J4qY9DYE184"
-    await context.bot.send_message(chat_id=chat_id,
-                                   text=f"🔗 Смотрите видео:\n{youtube_link}")  # :contentReference[oaicite:9]{index=9}
-
-    # 2.2. Отправляем текстовое описание Free Train
-    free_train_text = (
-        "OVERLORD AI INK (Free Train)\n\n"
-        "Это бесплатная версия бота для обучения ваших моделей в Stable Diffusion. "
-        "Здесь вы можете генерировать изображения на основе заранее заданных LoRA, "
-        "а также изменять параметры вашей модели. Для работы с ботом достаточно "
-        "открыть меню 'пример промта' и следовать инструкциям ниже.\n"
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Обработка команды /start"""
+    user_id = update.effective_user.id
+    user_states[user_id] = {"prompt_index": 0}
+    
+    # Отправка YouTube видео
+    await update.message.reply_text(f"🎬 Обучающее видео: {YOUTUBE_URL}")
+    
+    # Отправка описания
+    description = (
+        "🖌️ OVERLORD AI INK (Free Train)\n\n"
+        "Это бесплатная версия нейросети для генерации изображений в стиле аниме и манга. "
+        "Используйте Stable Diffusion для создания уникальных артов без ограничений!\n\n"
+        "Как использовать:\n"
+        "1. Введите текстовый промт на английском\n"
+        "2. Настройте параметры (стиль, детализацию)\n"
+        "3. Генерируйте изображения бесплатно!"
     )
-    await context.bot.send_message(chat_id=chat_id, text=free_train_text)  # :contentReference[oaicite:10]{index=10}
-
-    # 2.3. Отправляем GIF (14.gif) вместе со ссылкой на Google Colab
-    # Пример ссылки на Colab (замените на реальную ссылку, если есть)
-    colab_link = "https://colab.research.google.com/your_colab_link"
-    gif_path = STATIC_DIR / "14.gif"
-    if gif_path.exists():
-        await context.bot.send_animation(chat_id=chat_id,
-                                         animation=InputFile(gif_path),
-                                         caption=f"💻 Запустите Colab: {colab_link}")  # :contentReference[oaicite:11]{index=11}
-    else:
-        await context.bot.send_message(chat_id=chat_id,
-                                       text="⚠️ GIF не найден.")  # :contentReference[oaicite:12]{index=12}
-
-    # 2.4. Отправляем кнопку 'пример промта' и 'главное меню'
+    await update.message.reply_text(description)
+    
+    # Отправка GIF
+    gif_path = os.path.join("static", "14.gif")
+    with open(gif_path, "rb") as gif_file:
+        await update.message.reply_animation(
+            animation=InputFile(gif_file),
+            caption=f"🚀 Начать генерацию: {COLAB_URL}"
+        )
+    
+    # Кнопка "Пример промта"
     keyboard = [
-        [InlineKeyboardButton("📷 Пример промта", callback_data="show_prompt")],
-        [InlineKeyboardButton("🏠 Главное меню", callback_data="main_menu")],
+        [InlineKeyboardButton("Пример промта", callback_data="show_prompt")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await context.bot.send_message(chat_id=chat_id,
-                                   text="Выберите действие:",
-                                   reply_markup=reply_markup)  # :contentReference[oaicite:13]{index=13}
+    await update.message.reply_text("Попробуйте готовые промты:", reply_markup=reply_markup)
 
-    # Инициализируем индекс картинок для пользователя
-    user_image_index[chat_id] = 0  # :contentReference[oaicite:14]{index=14}
-
-# ------------------------------
-# 3. Обработчик callback-запросов
-# ------------------------------
-async def callback_query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """
-    Обработка нажатий на Inline-кнопки.
-    Возможные callback_data:
-    - 'show_prompt'         : показать очередной пример промта
-    - 'main_menu'           : вернуться в главное меню (Free Train)
-    - 'menu_free'           : показать Free Train (аналог /start)
-    - 'menu_pro'            : показать PRO-версию и подписки
-    - 'sub_month' / 'sub_forever' : подписки через Tribut
-    """
+async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показ примера промта с изображением"""
     query = update.callback_query
     await query.answer()
-    chat_id = query.message.chat.id
-    data = query.data
-
-    # 3.1. Нажатие 'show_prompt' — показать картинку+промт
-    if data == "show_prompt":
-        # Получаем текущий индекс для пользователя
-        idx = user_image_index.get(chat_id, 0)
-        filename = IMAGE_FILES[idx]
-        prompt_text = PROMPTS.get(filename, "Описание отсутствует")
-        image_path = STATIC_DIR / filename
-
-        # Отправляем картинку и текст промта
-        if image_path.exists():
-            await context.bot.send_photo(chat_id=chat_id,
-                                         photo=InputFile(image_path),
-                                         caption=f"💡 Пример промта для {filename}:\n{prompt_text}")  # :contentReference[oaicite:15]{index=15}
-        else:
-            await context.bot.send_message(chat_id=chat_id,
-                                           text=f"⚠️ Файл {filename} не найден.")  # :contentReference[oaicite:16]{index=16}
-
-        # Обновляем индекс (переходим к следующему, если конец — возвращаемся к 0)
-        next_idx = (idx + 1) % len(IMAGE_FILES)
-        user_image_index[chat_id] = next_idx  # :contentReference[oaicite:17]{index=17}
-
-        # Снова показываем кнопки: Пример промта и Главное меню
-        keyboard = [
-            [InlineKeyboardButton("📷 Пример промта", callback_data="show_prompt")],
-            [InlineKeyboardButton("🏠 Главное меню", callback_data="main_menu")],
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await context.bot.send_message(chat_id=chat_id,
-                                       text="Что дальше?",
-                                       reply_markup=reply_markup)  # :contentReference[oaicite:18]{index=18}
-
-    # 3.2. Нажатие 'main_menu' — показать заново Free Train (аналог /start)
-    elif data == "main_menu" or data == "menu_free":
-        # Вызываем логику из start_command
-        # Здесь проще напрямую вызвать команду start
-        await start_command(update, context)  # :contentReference[oaicite:19]{index=19}
-
-    # 3.3. Нажатие 'menu_pro' — показать PRO-версию и информацию о подписках
-    elif data == "menu_pro":
-        pro_text = (
-            "💼 Полная Версия OVERLORD AI INK PRO\n\n"
-            "В PRO-версии доступны:\n"
-            "• Расширенный набор моделей Stable Diffusion\n"
-            "• Возможность подключения сторонних LoRA и кастомных стилей\n"
-            "• Регулярные обновления и новые функции\n\n"
-            "Вы можете оформить подписку через Tribut:"
+    
+    user_id = query.from_user.id
+    user_state = user_states.get(user_id, {"prompt_index": 0})
+    current_index = user_state["prompt_index"]
+    
+    # Получение текущего промта
+    prompt_data = PROMPTS[current_index]
+    image_path = os.path.join("static", prompt_data["image"])
+    prompt_text = prompt_data["prompt"]
+    
+    # Отправка изображения
+    with open(image_path, "rb") as photo_file:
+        await query.message.reply_photo(
+            photo=InputFile(photo_file),
+            caption=prompt_text
         )
-        await context.bot.send_message(chat_id=chat_id, text=pro_text)  # :contentReference[oaicite:20]{index=20}
-
-        # Кнопки подписки через Tribut
-        tribut_link = "https://t.me/TributeBot?start=overlord_ai_ink"  # пример ссылки
-        keyboard = [
-            [InlineKeyboardButton("1 месяц – 2990₽", url=tribut_link + "_month")],
-            [InlineKeyboardButton("Навсегда – 11990₽", url=tribut_link + "_forever")],
-            [InlineKeyboardButton("🏠 Главное меню", callback_data="main_menu")],
+    
+    # Обновление индекса (циклически)
+    next_index = (current_index + 1) % len(PROMPTS)
+    user_states[user_id] = {"prompt_index": next_index}
+    
+    # Кнопки для продолжения
+    keyboard = [
+        [
+            InlineKeyboardButton("Ещё пример", callback_data="show_prompt"),
+            InlineKeyboardButton("Главное меню", callback_data="main_menu")
         ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await context.bot.send_message(chat_id=chat_id,
-                                       text="Выберите подписку:",
-                                       reply_markup=reply_markup)  # :contentReference[oaicite:21]{index=21}
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
 
-    # 3.4. Обработка возможных callback’ов для подписок (к примеру, можем отправить подтверждение)
-    elif data in ("sub_month", "sub_forever"):
-        if data == "sub_month":
-            await context.bot.send_message(chat_id=chat_id,
-                                           text="Вы выбрали подписку 1 месяц – 2990₽.\nПерейдите по ссылке выше для оплаты.")  # :contentReference[oaicite:22]{index=22}
-        else:
-            await context.bot.send_message(chat_id=chat_id,
-                                           text="Вы выбрали подписку навсегда – 11990₽.\nПерейдите по ссылке выше для оплаты.")  # :contentReference[oaicite:23]{index=23}
+async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показ главного меню"""
+    query = update.callback_query
+    await query.answer()
+    
+    keyboard = [
+        [InlineKeyboardButton("OVERLORD AI INK (Free Train)", callback_data="free_train")],
+        [InlineKeyboardButton("Полная Версия OVERLORD AI INK PRO", callback_data="pro_version")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Главное меню:", reply_markup=reply_markup)
 
-    else:
-        # На всякий случай
-        await context.bot.send_message(chat_id=chat_id,
-                                       text="❓ Неизвестное действие. Пожалуйста, выберите опцию.")  # :contentReference[oaicite:24]{index=24}
+async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Повторная отправка стартового сообщения"""
+    query = update.callback_query
+    await query.answer()
+    
+    # Повторяем логику команды /start
+    await query.message.reply_text(f"🎬 Обучающее видео: {YOUTUBE_URL}")
+    
+    description = (
+        "🖌️ OVERLORD AI INK (Free Train)\n\n"
+        "Бесплатная версия с базовыми функциями генерации изображений..."
+    )
+    await query.message.reply_text(description)
+    
+    gif_path = os.path.join("static", "14.gif")
+    with open(gif_path, "rb") as gif_file:
+        await query.message.reply_animation(
+            animation=InputFile(gif_file),
+            caption=f"🚀 Начать генерацию: {COLAB_URL}"
+        )
+    
+    keyboard = [[InlineKeyboardButton("Пример промта", callback_data="show_prompt")]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Попробуйте готовые промты:", reply_markup=reply_markup)
 
-# ------------------------------
-# 4. Функция для установки webhook (вызывается при старте)
-# ------------------------------
-async def set_webhook(app_context):
-    """
-    При запуске приложения устанавливаем webhook Telegram на адрес RENDER_EXTERNAL_URL/webhook
-    """
-    bot = Bot(token=TELEGRAM_TOKEN)
-    webhook_url = f"{RENDER_EXTERNAL_URL}/webhook"
-    # Устанавливаем webhook
-    await bot.set_webhook(webhook_url)  # :contentReference[oaicite:25]{index=25}
+async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Информация о PRO версии"""
+    query = update.callback_query
+    await query.answer()
+    
+    # Описание преимуществ PRO
+    pro_features = (
+        "🔥 OVERLORD AI INK PRO - Премиум версия\n\n"
+        "Отличия от бесплатной версии:\n"
+        "✅ 20+ эксклюзивных моделей стилей\n"
+        "✅ Поддержка LoRA-адаптеров\n"
+        "✅ Создание собственных стилей\n"
+        "✅ Приоритетные обновления\n"
+        "✅ Экспорт в 4K разрешении\n\n"
+        "Полный контроль над генерацией!"
+    )
+    await query.message.reply_text(pro_features)
+    
+    # Подписки через Tribut
+    subscriptions = (
+        "💎 Выберите подписку:\n\n"
+        "1 месяц - 2990₽\n"
+        "Навсегда - 11990₽\n\n"
+        f"Оформить: {TRIBUT_URL}"
+    )
+    await query.message.reply_text(subscriptions)
 
-# ------------------------------
-# 5. Flask-приложение для обработки webhook-запросов
-# ------------------------------
-@app.route("/webhook", methods=["POST", "GET"])
-def webhook():
-    """
-    Приходящий запрос из Telegram (update) присылается сюда в формате JSON.
-    Мы преобразуем его в Update и передаём в dispatcher.
-    """
-    from telegram import Update
-    from telegram.ext import Dispatcher
+def main() -> None:
+    """Запуск бота"""
+    application = Application.builder().token(TOKEN).build()
+    
+    # Обработчики команд
+    application.add_handler(CommandHandler("start", start))
+    
+    # Обработчики callback-запросов
+    application.add_handler(CallbackQueryHandler(show_prompt, pattern="^show_prompt$"))
+    application.add_handler(CallbackQueryHandler(main_menu, pattern="^main_menu$"))
+    application.add_handler(CallbackQueryHandler(free_train, pattern="^free_train$"))
+    application.add_handler(CallbackQueryHandler(pro_version, pattern="^pro_version$"))
+    
+    # Запуск бота
+    application.run_polling()
 
-    # Создаём ApplicationBuilder для обработки update внутри Flask (синхронно)
-    application = app.config["bot_app"]
-
-    if request.method == "POST":
-        update = Update.de_json(request.get_json(force=True), application.bot)
-        application.update_queue.put(update)
-        return "OK", 200
-    else:
-        return "Hello, this is OVERLORD AI INK bot!", 200
-
-# ------------------------------
-# 6. Точка входа при запуске на Render
-# ------------------------------
 if __name__ == "__main__":
-    # Создаём приложение (Application) для python-telegram-bot с запуском webhook
-    application = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-
-    # Сохраняем Application в конфиг Flask, чтобы можно было достучаться в webhook()
-    app.config["bot_app"] = application
-
-    # Регистрируем хендлеры
-    application.add_handler(CommandHandler("start", start_command))  # :contentReference[oaicite:26]{index=26}
-    application.add_handler(CallbackQueryHandler(callback_query_handler))  # :contentReference[oaicite:27]{index=27}
-
-    # Устанавливаем webhook при старте
-    # Обратите внимание: для установки webhook требуется asyncio-цикл,
-    # поэтому мы используем run_once в корутине.
-    application.run_webhook(
-        listen="0.0.0.0",
-        port=int(os.environ.get("PORT", "8443")),
-        webhook_url=f"{RENDER_EXTERNAL_URL}/webhook",
-    )  # :contentReference[oaicite:28]{index=28}
+    main()

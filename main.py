@@ -164,37 +164,41 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # Отправка PRO видео
     await query.message.reply_text(f"🎬 PRO Обучение: {PRO_VERSION_VIDEO}")
     
-    # Описание преимуществ PRO
-    pro_features = (
-        "🔥 OVERLORD AI INK PRO - Полная Версия с 30+ уникальными стилями!\n\n"
-        "Отличия от бесплатной версии:\n"
-        "✅ 30+ уникальных моделей стилей\n"
-        "✅ Быстрые генерации.В 4 раза быстрее\n"
-        "✅ Создание собственных стилей\n"
-        "✅ Приоритетные обновления\n"
-        "✅ Множество рабочих промтов \n\n"
-        "Полный контроль над генерацией!"
-    )
+   # Описание преимуществ PRO
+pro_features = (
+    "🔥 OVERLORD AI INK PRO - Полная Версия с 30+ уникальными стилями!\n\n"
+    "Отличия от бесплатной версии:\n"
+    "✅ 30+ уникальных моделей стилей\n"
+    "✅ Быстрые генерации.В 4 раза быстрее\n"
+    "✅ Создание собственных стилей\n"
+    "✅ Приоритетные обновления\n"
+    "✅ Множество рабочих промтов \n\n"
+    "Полный контроль над генерацией!"
+)
 await query.message.reply_text(pro_features)
 
-# Отправка PRO GIF
+# Отправка PRO GIF с инлайн-кнопкой
 pro_gif_path = os.path.join("static", "9d.gif")
 with open(pro_gif_path, "rb") as pro_gif_file:
+    keyboard_pro = [
+        [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
+    ]
+    reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
+    
     await query.message.reply_animation(
         animation=InputFile(pro_gif_file),
-        caption=(
-            "🔥 PRO версия открывает новые возможности генерации!\n"
-            f"Оформить: {TRIBUT_URL}"
-        )
+        caption="🔥 PRO версия открывает новые возможности генерации!",
+        reply_markup=reply_markup_pro
     )
 
 # Кнопки для возврата
 keyboard = [
     [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
 ]
+reply_markup = InlineKeyboardMarkup(keyboard)
+await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+
 
 def main() -> None:
     """Запуск бота"""

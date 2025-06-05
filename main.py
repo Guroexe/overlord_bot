@@ -28,7 +28,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Константы
-TOKEN = os.getenv("TOKEN", "8123626256:AAFLUPdZiVe8c64kggPUBxYikQA4AqpkTfY")
+TOKEN = os.getenv("TOKEN", "7972832759:AAGLOsFkxn_elDVNKsM2hk7Vt1qpoQawE2o")
 FREE_TRAIN_VIDEO = "https://www.youtube.com/watch?v=J4qY9DYE184"
 PRO_VERSION_VIDEO = "https://www.youtube.com/watch?v=NUJFW8ABurE"
 COLAB_URL = "https://colab.research.google.com/drive/your-colab-link"
@@ -79,6 +79,83 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 
+async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показ примера промта с изображением"""
+    query = update.callback_query
+    await query.answer()
+    
+    user_id = query.from_user.id
+    user_state = user_states.get(user_id, {"prompt_index": 0})
+    current_index = user_state["prompt_index"]
+    
+    # Получение текущего промта
+    prompt_data = PROMPTS[current_index]
+    image_path = os.path.join("static", prompt_data["image"])
+    prompt_text = prompt_data["prompt"]
+    
+    # Отправка изображения
+    with open(image_path, "rb") as photo_file:
+        await query.message.reply_photo(
+            photo=InputFile(photo_file),
+            caption=prompt_text
+        )
+    
+    # Обновление индекса (циклически)
+    next_index = (current_index + 1) % len(PROMPTS)
+    user_states[user_id] = {"prompt_index": next_index}
+    
+    # Кнопки для продолжения
+    keyboard = [
+        [
+            InlineKeyboardButton("Ещё пример", callback_data="show_prompt"),
+            InlineKeyboardButton("Главное меню", callback_data="main_menu")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
+
+async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показ главного меню"""
+    query = update.callback_query
+    await query.answer()
+    
+    keyboard = [
+        [InlineKeyboardButton("OVERLORD AI INK (Free Train)", callback_data="free_train")],
+        [InlineKeyboardButton("Полная Версия OVERLORD AI INK PRO", callback_data="pro_version")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Главное меню:", reply_markup=reply_markup)
+
+async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Повторная отправка стартового сообщения"""
+    query = update.callback_query
+    await query.answer()
+    
+    # Повторяем логику команды /start
+    await query.message.reply_text(f"🎬 Обучающее видео: {FREE_TRAIN_VIDEO}")
+    
+    description = (
+        "🖌️ OVERLORD AI INK (Free Train)\n\n"
+        "Бесплатная версия с базовыми функциями генерации изображений..."
+    )
+    await query.message.reply_text(description)
+    
+    gif_path = os.path.join("static", "14.gif")
+    with open(gif_path, "rb") as gif_file:
+        await query.message.reply_animation(
+            animation=InputFile(gif_file),
+            caption=f"🚀 Начать генерацию: {COLAB_URL}"
+        )
+    
+    keyboard = [
+        [
+            InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
+            InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+
 async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Информация о PRO версии"""
     query = update.callback_query
@@ -123,8 +200,6 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
-
-# ... (остальные функции остаются без изменений, как в предыдущем коде)
 
 def main() -> None:
     """Запуск бота"""

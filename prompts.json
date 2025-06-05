@@ -1,7 +1,18 @@
-{
-    "1.png": "Промт: cyberpunk overlord in ruined Tokyo, neon lights, HDR, 4K",
-    "2.png": "Промт: dark anime emperor, glowing AI eyes, monochrome palette",
-    "3.png": "Промт: tattooed robot deity, inkflow style, hi-detail, 8k render",
-    "4.png": "Промт: demon core AI overlord, fire circuit patterns, mystic vibes"
-  }
-  
+[
+    {
+        "image": "1.png",
+        "prompt": "Пример промта для 1.png:\nЖенщина в футуристическом костюме, цифровое искусство, стиль аниме"
+    },
+    {
+        "image": "2.png",
+        "prompt": "Пример промта для 2.png:\nФэнтезийный пейзаж с замком, волшебное сияние, детализированное окружение"
+    },
+    {
+        "image": "3.png",
+        "prompt": "Пример промта для 3.png:\nКиберпанк город ночью, неоновые вывески, дождь, атмосферная перспектива"
+    },
+    {
+        "image": "4.png",
+        "prompt": "Пример промта для 4.png:\nПортрет робота в стиле стимпанк, механические детали, винтажное освещение"
+    }
+]

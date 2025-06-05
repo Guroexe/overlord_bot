@@ -175,11 +175,11 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         "✅ Множество рабочих промтов \n\n"
         "Полный контроль над генерацией!"
     )
-    await query.message.reply_text(pro_features)
-    
-    # Отправка PRO GIF
-    pro_gif_path = os.path.join("static", "9d.gif")
-    with open(pro_gif_path, "rb") as pro_gif_file:
+await query.message.reply_text(pro_features)
+
+# Отправка PRO GIF
+pro_gif_path = os.path.join("static", "9d.gif")
+with open(pro_gif_path, "rb") as pro_gif_file:
     await query.message.reply_animation(
         animation=InputFile(pro_gif_file),
         caption=(
@@ -188,10 +188,11 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         )
     )
 
-    # Кнопки для возврата
-    keyboard = [
-        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
-    ]
+# Кнопки для возврата
+keyboard = [
+    [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
+]
+
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 

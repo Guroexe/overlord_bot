@@ -24,7 +24,13 @@ from telegram import Bot
 # 1. Настройка переменных
 # ------------------------------
 # Токен берётся из переменной окружения TELEGRAM_TOKEN
-TELEGRAM_TOKEN = os.environ.get("7972832759:AAEwXCLf7bXdYguvmx4cJvPCfnfWmslXVW8")
+import os
+
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
+RENDER_EXTERNAL_URL = os.environ.get("RENDER_EXTERNAL_URL")
+
+if not TELEGRAM_TOKEN or not RENDER_EXTERNAL_URL:
+    raise RuntimeError("Не задан TELEGRAM_TOKEN или RENDER_EXTERNAL_URL")
 
 # Инициализируем Flask для приёма webhook-запросов
 app = Flask(__name__)

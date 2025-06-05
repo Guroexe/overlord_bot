@@ -177,19 +177,17 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     )
     await query.message.reply_text(pro_features)
     
-  # Отправка PRO GIF
+    # Отправка PRO GIF
     pro_gif_path = os.path.join("static", "9d.gif")
     with open(pro_gif_path, "rb") as pro_gif_file:
     await query.message.reply_animation(
         animation=InputFile(pro_gif_file),
         caption=(
-            "🔥 PRO версия открывает новые возможности генерации!\n\n"
-            "🔥 Оформить:\n"
-            f"{TRIBUT_URL}"
-         )
-     )
+            "🔥 PRO версия открывает новые возможности генерации!\n"
+            f"Оформить: {TRIBUT_URL}"
+        )
+    )
 
-    
     # Кнопки для возврата
     keyboard = [
         [InlineKeyboardButton("Главное меню", callback_data="main_menu")]

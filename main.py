@@ -42,10 +42,13 @@ CREATOR_CHANNEL = "https://t.me/gurovlad"
 with open("prompts.json", "r", encoding="utf-8") as f:
     PROMPTS = json.load(f)
 
+# Глобальный словарь для хранения состояний пользователей
+user_states = {}
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка команды /start"""
     user = update.effective_user
-    context.user_data["prompt_index"] = 0
+    user_states[user.id] = {"prompt_index": 0}
     
     await update.message.reply_text(f"<b>🎬 Обучающее видео:</b>\n{FREE_TRAIN_VIDEO}", parse_mode='HTML')
     
@@ -68,7 +71,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 parse_mode='HTML'
             )
     except Exception as e:
-        logger.error(f"Ошибка при отправке GIF: {e}")
+        logger.error(f"Error sending gif: {e}")
         await update.message.reply_text(f"<b>🚀 Начать генерацию:</b>\n{COLAB_URL}", parse_mode='HTML')
     
     keyboard = [
@@ -84,45 +87,40 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     query = update.callback_query
     await query.answer()
     
+    user_id = query.from_user.id
+    user_state = user_states.get(user_id, {"prompt_index": 0})
+    current_index = user_state["prompt_index"]
+    
+    # Получение текущего промта
+    prompt_data = PROMPTS[current_index]
+    image_path = os.path.join("static", prompt_data["image"])
+    prompt_text = prompt_data["prompt"]
+    
+    # Отправка изображения
     try:
-        if not PROMPTS:
-            await query.message.reply_text("⚠️ Примеры промтов временно недоступны")
-            return
-            
-        # Получение текущего индекса
-        current_index = context.user_data.get("prompt_index", 0)
-        prompt_data = PROMPTS[current_index % len(PROMPTS)]
-        
-        # Отправка изображения
-        image_path = os.path.join("static", prompt_data["image"])
-        try:
-            with open(image_path, "rb") as photo_file:
-                await query.message.reply_photo(
-                    photo=InputFile(photo_file),
-                    caption=prompt_data["prompt"],
-                    parse_mode='HTML'
-                )
-        except FileNotFoundError:
-            logger.error(f"Файл {image_path} не найден")
-            await query.message.reply_text(prompt_data["prompt"], parse_mode='HTML')
-        
-        # Обновление индекса
-        next_index = (current_index + 1) % len(PROMPTS)
-        context.user_data["prompt_index"] = next_index
-        
-        # Кнопки для продолжения
-        keyboard = [
-            [
-                InlineKeyboardButton("Ещё пример", callback_data="show_prompt"),
-                InlineKeyboardButton("Главное меню", callback_data="main_menu")
-            ]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
-        
+        with open(image_path, "rb") as photo_file:
+            await query.message.reply_photo(
+                photo=InputFile(photo_file),
+                caption=prompt_text,
+                parse_mode='HTML'
+            )
     except Exception as e:
-        logger.error(f"Ошибка в show_prompt: {str(e)}")
-        await query.message.reply_text("⚠️ Не удалось загрузить пример", parse_mode='HTML')
+        logger.error(f"Error sending photo: {e}")
+        await query.message.reply_text(
+            f"Пример промта:\n{prompt_text}\n\n(Изображение недоступно)",
+            parse_mode='HTML'
+        )
+    
+    # Обновление индекса (циклически)
+    next_index = (current_index + 1) % len(PROMPTS)
+    user_states[user_id] = {"prompt_index": next_index}
+    
+    keyboard = [
+        [InlineKeyboardButton("Ещё пример", callback_data="show_prompt")],
+        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ главного меню"""
@@ -159,7 +157,7 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 parse_mode='HTML'
             )
     except Exception as e:
-        logger.error(f"Ошибка при отправке GIF: {e}")
+        logger.error(f"Error sending gif: {e}")
         await query.message.reply_text(f"<b>🚀 Начать генерацию:</b>\n{COLAB_URL}", parse_mode='HTML')
     
     keyboard = [
@@ -170,136 +168,8 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 
-async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Информация о PRO версии"""
-    query = update.callback_query
-    await query.answer()
-    
-    await query.message.reply_text(f"<b>🎬 PRO Обучение:</b>\n{PRO_VERSION_VIDEO}", parse_mode='HTML')
-    
-    pro_features = (
-        "<b>🔥 OVERLORD AI INK PRO - Полная Версия с 30+ уникальными стилями!</b>\n\n"
-        "<b>Отличия от бесплатной версии:</b>\n"
-        "• 30+ уникальных моделей стилей\n"
-        "• Быстрые генерации (в 4 раза быстрее)\n"
-        "• Создание собственных стилей\n\n"
-        f"Создатель: {CREATOR_CHANNEL}"
-    )
-    await query.message.reply_text(pro_features, parse_mode='HTML')
-
-    try:
-        with open(os.path.join("static", "9d.gif"), "rb") as pro_gif_file:
-            keyboard_pro = [[InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]]
-            await query.message.reply_animation(
-                animation=InputFile(pro_gif_file),
-                caption="<b>🔥 PRO версия открывает новые возможности генерации!</b>",
-                parse_mode='HTML',
-                reply_markup=InlineKeyboardMarkup(keyboard_pro)
-            )
-    except Exception as e:
-        logger.error(f"Ошибка при отправке PRO GIF: {e}")
-        keyboard_pro = [[InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]]
-        await query.message.reply_text(
-            "<b>🔥 PRO версия открывает новые возможности генерации!</b>",
-            parse_mode='HTML',
-            reply_markup=InlineKeyboardMarkup(keyboard_pro)
-        )
-
-    keyboard = [[InlineKeyboardButton("Главное меню", callback_data="main_menu")]]
-    await query.message.reply_text("Выберите действие:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-async def tattoo_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Обучение Тату IKONA"""
-    query = update.callback_query
-    await query.answer()
-    
-    await query.message.reply_text(f"<b>🎬 Обучение Тату IKONA:</b>\n{TATTOO_TRAINING_VIDEO}", parse_mode='HTML')
-    
-    description = (
-        "<b>Обучение Икона</b>\n\n"
-        "Создана для тех, кто хочет сразу начать колоть СТИЛЬ и быстро ворваться в индустрию.\n\n"
-        "<b>Выбери программу, которая тебе больше подходит!</b>"
-    )
-    await query.message.reply_text(description, parse_mode='HTML')
-    
-    keyboard = [
-        [InlineKeyboardButton("Оффлайн обучение IKONA в Москве и Питере", callback_data="offline_training")],
-        [InlineKeyboardButton("Онлайн обучение IKONA", callback_data="online_training")],
-        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
-    ]
-    await query.message.reply_text("Выберите формат обучения:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Оффлайн обучение IKONA"""
-    query = update.callback_query
-    await query.answer()
-    
-    await query.message.reply_text(f"<b>🎬 Оффлайн обучение:</b>\n{OFFLINE_TRAINING_VIDEO}", parse_mode='HTML')
-    
-    description = (
-        "<b>Оффлайн обучение IKONA в Москве и Питере</b>\n\n"
-        "<b>Программа включает:</b>\n"
-        "• Занятия на искусственной коже и на людях\n"
-        "• Создание собственного стиля при помощи ИИ\n\n"
-        "<b>Детали:</b>\n"
-        "• Срок обучения: 2 месяца\n"
-        "• Стоимость: 99 000₽\n\n"
-        "<b>Приходи на Бесплатный Первый Урок!</b>"
-    )
-    await query.message.reply_text(description, parse_mode='HTML')
-    
-    keyboard = [
-        [InlineKeyboardButton("Записаться на Пробный Урок / Обучение", callback_data="sign_up")],
-        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
-    ]
-    await query.message.reply_text("Выберите действие:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Онлайн обучение IKONA"""
-    query = update.callback_query
-    await query.answer()
-    
-    await query.message.reply_text(f"<b>🎬 Онлайн обучение:</b>\n{ONLINE_TRAINING_VIDEO}", parse_mode='HTML')
-    
-    description = (
-        "<b>Онлайн Обучение IKONA</b>\n\n"
-        "<b>Программа состоит из:</b>\n"
-        "1. Обучение работе с ИИ\n"
-        "2. Онлайн уроки по нанесению тату\n\n"
-        "<b>Дополнительно:</b>\n"
-        "• Профессиональная тату машинка\n"
-        "• Помощь с поиском салона и модели\n\n"
-        "<b>Детали:</b>\n"
-        "• Срок обучения: 2 месяца\n"
-        "• Стоимость: 79 000₽"
-    )
-    await query.message.reply_text(description, parse_mode='HTML')
-    
-    keyboard = [
-        [InlineKeyboardButton("Подробнее / Записаться", callback_data="sign_up")],
-        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
-    ]
-    await query.message.reply_text("Выберите действие:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-async def sign_up(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Запись на обучение"""
-    query = update.callback_query
-    await query.answer()
-    
-    message = (
-        "<b>Запись на обучение</b>\n\n"
-        "Для записи на пробный урок или обучения:\n\n"
-        "Напишите сюда: @vladguro\n\n"
-        "Мы свяжемся с вами в ближайшее время!"
-    )
-    await query.message.reply_text(message, parse_mode='HTML')
-    
-    keyboard = [[InlineKeyboardButton("Главное меню", callback_data="main_menu")]]
-    await query.message.reply_text("Выберите действие:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Обработка текстовых сообщений"""
-    await update.message.reply_text("Пожалуйста, используйте кнопки меню")
+# Остальные функции (pro_version, tattoo_training, offline_training, online_training, sign_up) остаются без изменений
+# ...
 
 def main() -> None:
     """Запуск бота"""

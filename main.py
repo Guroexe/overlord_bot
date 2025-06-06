@@ -67,7 +67,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 caption=f"<b>🚀 Начать генерацию!</b>\nИспользуй COLAB: {COLAB_URL}",
                 parse_mode='HTML'
             )
-    except:
+    except Exception as e:
+        logger.error(f"Ошибка при отправке GIF: {e}")
         await update.message.reply_text(f"<b>🚀 Начать генерацию:</b>\n{COLAB_URL}", parse_mode='HTML')
     
     keyboard = [
@@ -83,27 +84,45 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     query = update.callback_query
     await query.answer()
     
-    current_index = context.user_data.get("prompt_index", 0)
-    prompt_data = PROMPTS[current_index % len(PROMPTS)]
-    
     try:
-        with open(os.path.join("static", prompt_data["image"]), "rb") as photo_file:
-            await query.message.reply_photo(
-                photo=InputFile(photo_file),
-                caption=prompt_data["prompt"],
-                parse_mode='HTML'
-            )
-    except:
-        await query.message.reply_text(prompt_data["prompt"], parse_mode='HTML')
-    
-    context.user_data["prompt_index"] = (current_index + 1) % len(PROMPTS)
-    
-    keyboard = [
-        [InlineKeyboardButton("Ещё пример", callback_data="show_prompt")],
-        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
+        if not PROMPTS:
+            await query.message.reply_text("⚠️ Примеры промтов временно недоступны")
+            return
+            
+        # Получение текущего индекса
+        current_index = context.user_data.get("prompt_index", 0)
+        prompt_data = PROMPTS[current_index % len(PROMPTS)]
+        
+        # Отправка изображения
+        image_path = os.path.join("static", prompt_data["image"])
+        try:
+            with open(image_path, "rb") as photo_file:
+                await query.message.reply_photo(
+                    photo=InputFile(photo_file),
+                    caption=prompt_data["prompt"],
+                    parse_mode='HTML'
+                )
+        except FileNotFoundError:
+            logger.error(f"Файл {image_path} не найден")
+            await query.message.reply_text(prompt_data["prompt"], parse_mode='HTML')
+        
+        # Обновление индекса
+        next_index = (current_index + 1) % len(PROMPTS)
+        context.user_data["prompt_index"] = next_index
+        
+        # Кнопки для продолжения
+        keyboard = [
+            [
+                InlineKeyboardButton("Ещё пример", callback_data="show_prompt"),
+                InlineKeyboardButton("Главное меню", callback_data="main_menu")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
+        
+    except Exception as e:
+        logger.error(f"Ошибка в show_prompt: {str(e)}")
+        await query.message.reply_text("⚠️ Не удалось загрузить пример", parse_mode='HTML')
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ главного меню"""
@@ -139,7 +158,8 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 caption=f"<b>🚀 Начать генерацию!</b>\nCOLAB: {COLAB_URL}",
                 parse_mode='HTML'
             )
-    except:
+    except Exception as e:
+        logger.error(f"Ошибка при отправке GIF: {e}")
         await query.message.reply_text(f"<b>🚀 Начать генерацию:</b>\n{COLAB_URL}", parse_mode='HTML')
     
     keyboard = [
@@ -176,7 +196,8 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 parse_mode='HTML',
                 reply_markup=InlineKeyboardMarkup(keyboard_pro)
             )
-    except:
+    except Exception as e:
+        logger.error(f"Ошибка при отправке PRO GIF: {e}")
         keyboard_pro = [[InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]]
         await query.message.reply_text(
             "<b>🔥 PRO версия открывает новые возможности генерации!</b>",

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import logging
 import json
 import os
@@ -156,7 +157,8 @@ RU_TEXTS = {
     "offline_training_btn": "Оффлайн обучение IKONA в Москве и Питере",
     "online_training_btn": "Онлайн обучение IKONA",
     "trial_lesson": "Записаться на Пробный Урок / Обучение",
-    "more_details": "Подробнее / Записаться"
+    "more_details": "Подробнее / Записаться",
+    "use_buttons": "Пожалуйста, используйте кнопки меню"
 }
 
 # Тексты для английской версии
@@ -261,7 +263,8 @@ EN_TEXTS = {
     "offline_training_btn": "Offline IKONA training in Moscow and St. Petersburg",
     "online_training_btn": "Online IKONA training",
     "trial_lesson": "Sign up for Trial Lesson / Training",
-    "more_details": "More details / Sign up"
+    "more_details": "More details / Sign up",
+    "use_buttons": "Please use menu buttons"
 }
 
 # Загрузка промтов
@@ -308,22 +311,24 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка YouTube видео
-        await query.message.reply_text(f"🎬 {texts['training_video'] if lang == 'ru' else 'Training video'}: {videos['free_train']}")
+        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
+        await query.message.reply_text(f"{video_text} {videos['free_train']}")
         
         # Отправка описания
         await query.message.reply_text(texts["start"], parse_mode='Markdown')
         
         # Отправка GIF
         gif_path = os.path.join("static", "14.gif")
+        caption_text = "🚀 Начните генерацию! Используйте COLAB:" if lang == "ru" else "🚀 Start generating! Use COLAB:"
         try:
             with open(gif_path, "rb") as gif_file:
                 await query.message.reply_animation(
                     animation=InputFile(gif_file),
-                    caption=f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}! {texts['use_colab'] if lang == 'ru' else 'Use COLAB'}: {COLAB_URL}"
+                    caption=f"{caption_text} {COLAB_URL}"
                 )
         except FileNotFoundError:
             logger.error(f"Файл {gif_path} не найден")
-            await query.message.reply_text(f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}: {COLAB_URL}")
+            await query.message.reply_text(f"{caption_text} {COLAB_URL}")
         
         # Кнопки при старте
         keyboard = [
@@ -340,7 +345,10 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         
     except Exception as e:
         logger.error(f"Ошибка в set_language: {str(e)}")
-        await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+        if update.callback_query:
+            await update.callback_query.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+        else:
+            await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
 
 async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Установка русского языка"""
@@ -427,18 +435,21 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        await query.message.reply_text(f"🎬 {texts['training_video'] if lang == 'ru' else 'Training video'}: {videos['free_train']}")
+        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
+        await query.message.reply_text(f"{video_text} {videos['free_train']}")
+        
         await query.message.reply_text(texts["start"], parse_mode='Markdown')
         
         gif_path = os.path.join("static", "14.gif")
+        caption_text = "🚀 Начните генерацию! Используйте COLAB:" if lang == "ru" else "🚀 Start generating! Use COLAB:"
         try:
             with open(gif_path, "rb") as gif_file:
                 await query.message.reply_animation(
                     animation=InputFile(gif_file),
-                    caption=f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}! {texts['use_colab'] if lang == 'ru' else 'Use COLAB'}: {COLAB_URL}"
+                    caption=f"{caption_text} {COLAB_URL}"
                 )
         except FileNotFoundError:
-            await query.message.reply_text(f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}: {COLAB_URL}")
+            await query.message.reply_text(f"{caption_text} {COLAB_URL}")
         
         keyboard = [
             [
@@ -466,7 +477,8 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка PRO видео
-        await query.message.reply_text(f"🎬 {texts['pro_training'] if lang == 'ru' else 'PRO Training'}: {videos['pro_version']}")
+        video_text = "🎬 PRO обучение:" if lang == "ru" else "🎬 PRO Training:"
+        await query.message.reply_text(f"{video_text} {videos['pro_version']}")
         
         # Описание преимуществ PRO
         await query.message.reply_text(texts["pro_features"], parse_mode='Markdown')
@@ -516,7 +528,8 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка видео
-        await query.message.reply_text(f"🎬 {texts['ikona_training_video'] if lang == 'ru' else 'IKONA Training video'}: {videos['ikona_training']}")
+        video_text = "🎬 Обучение IKONA:" if lang == "ru" else "🎬 IKONA Training:"
+        await query.message.reply_text(f"{video_text} {videos['ikona_training']}")
         
         # Описание обучения
         await query.message.reply_text(texts["ikona_training"], parse_mode='Markdown')
@@ -527,7 +540,8 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             [InlineKeyboardButton(texts["online_training_btn"], callback_data="online_training")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text(texts["choose_training_format"] if lang == 'ru' else "Choose training format:", reply_markup=reply_markup)
+        menu_text = "Выберите формат обучения:" if lang == "ru" else "Choose training format:"
+        await query.message.reply_text(menu_text, reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в ikona_training: {str(e)}")
@@ -543,7 +557,8 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка видео
-        await query.message.reply_text(f"🎬 {texts['offline_training_video'] if lang == 'ru' else 'Offline training video'}: {videos['offline_training']}")
+        video_text = "🎬 Оффлайн обучение:" if lang == "ru" else "🎬 Offline training:"
+        await query.message.reply_text(f"{video_text} {videos['offline_training']}")
         
         # Описание оффлайн обучения
         await query.message.reply_text(texts["offline_training"], parse_mode='Markdown')
@@ -570,7 +585,8 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка видео
-        await query.message.reply_text(f"🎬 {texts['online_training_video'] if lang == 'ru' else 'Online training video'}: {videos['online_training']}")
+        video_text = "🎬 Онлайн обучение:" if lang == "ru" else "🎬 Online training:"
+        await query.message.reply_text(f"{video_text} {videos['online_training']}")
         
         # Описание онлайн обучения
         await query.message.reply_text(texts["online_training"], parse_mode='Markdown')
@@ -619,7 +635,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     try:
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        await update.message.reply_text(texts["use_buttons"] if lang == 'ru' else "Please use menu buttons")
+        await update.message.reply_text(texts["use_buttons"])
     except Exception as e:
         logger.error(f"Ошибка в handle_text: {str(e)}")
 

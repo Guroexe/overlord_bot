@@ -180,7 +180,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
      # Отправка PRO GIF с инлайн-кнопкой
      pro_gif_path = os.path.join("static", "9d.gif")
      with open(pro_gif_path, "rb") as pro_gif_file:
-         keyboard_pro = [
+     keyboard_pro = [
          [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
     ]
     reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
@@ -191,12 +191,12 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         reply_markup=reply_markup_pro
     )
 
-# Кнопки для возврата
-keyboard = [
-    [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
-]
-reply_markup = InlineKeyboardMarkup(keyboard)
-await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+    # Кнопки для возврата
+    keyboard = [
+        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 
 
 

@@ -221,7 +221,7 @@ EN_TEXTS = {
     "online_training": (
         "**ONLINE IKONA TRAINING**\n\n"
         "**THE PROGRAM CONSISTS OF:**\n\n"
-        "🤖 **"AI Training" block** — creating your own style\n"
+        "🤖 **AI Training block** — creating your own style\n"
         "👨‍💻 **Online lessons with teacher** — application technique\n\n"
         "**HOW THE TRAINING GOES:**\n\n"
         "📱 **Video calls with teacher** — enough for correct hand positioning and transfer of important knowledge\n\n"

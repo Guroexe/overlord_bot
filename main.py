@@ -99,7 +99,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         keyboard = [
             [
                 InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
-                InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
+                InlineKeyboardButton("ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +", callback_data="pro_version")
+            ],
+            [
+                InlineKeyboardButton("Обучение Тату IKONA", callback_data="ikona_training")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -161,7 +164,7 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         
         keyboard = [
             [InlineKeyboardButton("OVERLORD AI INK (Free Train)", callback_data="free_train")],
-            [InlineKeyboardButton("Полная Версия OVERLORD AI INK PRO", callback_data="pro_version")],
+            [InlineKeyboardButton("ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +", callback_data="pro_version")],
             [InlineKeyboardButton("Обучение Тату IKONA", callback_data="ikona_training")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -198,7 +201,10 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         keyboard = [
             [
                 InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
-                InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
+                InlineKeyboardButton("ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +", callback_data="pro_version")
+            ],
+            [
+                InlineKeyboardButton("Обучение Тату IKONA", callback_data="ikona_training")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)

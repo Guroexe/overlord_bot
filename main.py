@@ -11,7 +11,7 @@ from telegram.ext import (
     Application,
     CommandHandler,
     CallbackQueryHandler,
-    ContextTypes
+    ContextTypes,
 )
 from dotenv import load_dotenv
 
@@ -45,37 +45,36 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user_states[user_id] = {"prompt_index": 0}
 
     # Отправка YouTube видео
-    await update.message.reply_text(f"🎬 Обучающее видео: {FREE_TRAIN_VIDEO}")
+    await update.message.reply_text(f"ОБУЧАЮЩЕЕ ВИДЕО: {FREE_TRAIN_VIDEO}")
 
-    # Отправка описания
+    # Описание без кнопок
     description = (
-        "🖌️ OVERLORD AI INK (Free Train)\n\n"
-        "Это бесплатная версия нейросети для генерации изображений в стиле sigilism, tribal, dark tattoo. "
-        "Используйте OVERLORD INK AI для создания уникальных артов без ограничений!\n\n"
-        "Как использовать:\n"
-        "1. Введите текстовый промт на английском. Или используйте промт из примеров подсказок\n"
-        "2. Настройте параметры. Sampling method - DPM++ 2M SDE. Steps - 20. Width - 720. Height - 980. CFG Scale - 4\n"
-        "3. Генерируйте изображения бесплатно!"
+        "OVERLORD AI INK (FREE TRAIN)\n\n"
+        "ЭТО БЕСПЛАТНАЯ ВЕРСИЯ НЕЙРОСЕТИ ДЛЯ ГЕНЕРАЦИИ ИЗОБРАЖЕНИЙ В СТИЛЕ SIGILISM, TRIBAL, DARK TATTOO. "
+        "ИСПОЛЬЗУЙТЕ OVERLORD INK AI ДЛЯ СОЗДАНИЯ УНИКАЛЬНЫХ АРТОВ БЕЗ ОГРАНИЧЕНИЙ!\n\n"
+        "КАК ИСПОЛЬЗОВАТЬ:\n"
+        "1. ВВЕДИТЕ ТЕКСТОВЫЙ ПРОМТ НА АНГЛИЙСКОМ ИЛИ ИСПОЛЬЗУЙТЕ ПРОМТ ИЗ ПРИМЕРОВ ПОДСКАЗОК\n"
+        "2. НАСТРОЙТЕ ПАРАМЕТРЫ: SAMPLING METHOD - DPM++ 2M SDE, STEPS - 20, WIDTH - 720, HEIGHT - 980, CFG SCALE - 4\n"
+        "3. ГЕНЕРИРУЙТЕ ИЗОБРАЖЕНИЯ БЕСПЛАТНО!"
     )
     await update.message.reply_text(description)
 
-    # Отправка GIF
+    # Отправка гифки с подписью и кнопками (одно сообщение)
     gif_path = os.path.join("static", "14.gif")
-    with open(gif_path, "rb") as gif_file:
-        await update.message.reply_animation(
-            animation=InputFile(gif_file),
-            caption=f"🚀 Начать генерацию! Используй COLAB: {COLAB_URL}"
-        )
-
-    # Кнопки при старте
     keyboard = [
         [
-            InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
+            InlineKeyboardButton("ПРИМЕР ПРОМТА", callback_data="show_prompt"),
             InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+
+    with open(gif_path, "rb") as gif_file:
+        await update.message.reply_animation(
+            animation=InputFile(gif_file),
+            caption=f"НАЧАТЬ ГЕНЕРАЦИЮ ИСПОЛЬЗУЙ COLAB: {COLAB_URL}",
+            reply_markup=reply_markup
+        )
 
 async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ примера промта с изображением"""
@@ -105,12 +104,12 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # Кнопки для продолжения
     keyboard = [
         [
-            InlineKeyboardButton("Ещё пример", callback_data="show_prompt"),
-            InlineKeyboardButton("Главное меню", callback_data="main_menu")
+            InlineKeyboardButton("ЕЩЁ ПРИМЕР", callback_data="show_prompt"),
+            InlineKeyboardButton("ГЛАВНОЕ МЕНЮ", callback_data="main_menu")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
+    await query.message.reply_text("ЧТО ДАЛЬШЕ?", reply_markup=reply_markup)
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ главного меню"""
@@ -118,23 +117,22 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await query.answer()
 
     keyboard = [
-        [InlineKeyboardButton("OVERLORD AI INK (Free Train)", callback_data="free_train")],
-        [InlineKeyboardButton("Полная Версия OVERLORD AI INK PRO", callback_data="pro_version")]
+        [InlineKeyboardButton("OVERLORD AI INK (FREE TRAIN)", callback_data="free_train")],
+        [InlineKeyboardButton("ПОЛНАЯ ВЕРСИЯ OVERLORD AI INK PRO", callback_data="pro_version")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text("Главное меню:", reply_markup=reply_markup)
+    await query.message.reply_text("ГЛАВНОЕ МЕНЮ:", reply_markup=reply_markup)
 
 async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Повторная отправка стартового сообщения"""
     query = update.callback_query
     await query.answer()
 
-    # Повторяем логику команды /start
-    await query.message.reply_text(f"🎬 Обучающее видео: {FREE_TRAIN_VIDEO}")
+    await query.message.reply_text(f"ОБУЧАЮЩЕЕ ВИДЕО: {FREE_TRAIN_VIDEO}")
 
     description = (
-        "🖌️ OVERLORD AI INK (Free Train)\n\n"
-        "Бесплатная версия с 3 стилями генераций изображений..."
+        "OVERLORD AI INK (FREE TRAIN)\n\n"
+        "БЕСПЛАТНАЯ ВЕРСИЯ С 3 СТИЛЯМИ ГЕНЕРАЦИЙ ИЗОБРАЖЕНИЙ..."
     )
     await query.message.reply_text(description)
 
@@ -142,17 +140,17 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     with open(gif_path, "rb") as gif_file:
         await query.message.reply_animation(
             animation=InputFile(gif_file),
-            caption=f"🚀 Начать генерацию! COLAB: {COLAB_URL}"
+            caption=f"НАЧАТЬ ГЕНЕРАЦИЮ! COLAB: {COLAB_URL}"
         )
 
     keyboard = [
         [
-            InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
+            InlineKeyboardButton("ПРИМЕР ПРОМТА", callback_data="show_prompt"),
             InlineKeyboardButton("OVERLORD AI INK PRO", callback_data="pro_version")
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+    await query.message.reply_text("ВЫБЕРИТЕ ДЕЙСТВИЕ:", reply_markup=reply_markup)
 
 async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Информация о PRO версии"""
@@ -160,18 +158,18 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     await query.answer()
 
     # Отправка PRO видео
-    await query.message.reply_text(f"🎬 PRO Обучение: {PRO_VERSION_VIDEO}")
+    await query.message.reply_text(f"PRO ОБУЧЕНИЕ: {PRO_VERSION_VIDEO}")
 
     # Описание преимуществ PRO
     pro_features = (
-        "🔥 OVERLORD AI INK PRO - Полная Версия с 30+ уникальными стилями!\n\n"
-        "Отличия от бесплатной версии:\n"
-        "✅ 30+ уникальных моделей стилей\n"
-        "✅ Быстрые генерации. В 4 раза быстрее\n"
-        "✅ Создание собственных стилей\n"
-        "✅ Приоритетные обновления\n"
-        "✅ Множество рабочих промтов \n\n"
-        "Полный контроль над генерацией!"
+        "OVERLORD AI INK PRO - ПОЛНАЯ ВЕРСИЯ С 30+ УНИКАЛЬНЫМИ СТИЛЯМИ!\n\n"
+        "ОТЛИЧИЯ ОТ БЕСПЛАТНОЙ ВЕРСИИ:\n"
+        "30+ УНИКАЛЬНЫХ МОДЕЛЕЙ СТИЛЕЙ\n"
+        "БЫСТРЫЕ ГЕНЕРАЦИИ. В 4 РАЗА БЫСТРЕЕ\n"
+        "СОЗДАНИЕ СОБСТВЕННЫХ СТИЛЕЙ\n"
+        "ПРИОРИТЕТНЫЕ ОБНОВЛЕНИЯ\n"
+        "МНОЖЕСТВО РАБОЧИХ ПРОМТОВ\n\n"
+        "ПОЛНЫЙ КОНТРОЛЬ НАД ГЕНЕРАЦИЕЙ!"
     )
     await query.message.reply_text(pro_features)
 
@@ -179,22 +177,22 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     pro_gif_path = os.path.join("static", "9d.gif")
     with open(pro_gif_path, "rb") as pro_gif_file:
         keyboard_pro = [
-            [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
+            [InlineKeyboardButton("ОФОРМИТЬ PRO", url=TRIBUT_URL)]
         ]
         reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
 
         await query.message.reply_animation(
             animation=InputFile(pro_gif_file),
-            caption="🔥 PRO версия открывает новые возможности генерации!",
+            caption="PRO ВЕРСИЯ ОТКРЫВАЕТ НОВЫЕ ВОЗМОЖНОСТИ ГЕНЕРАЦИИ!",
             reply_markup=reply_markup_pro
         )
 
-    # Кнопка для возврата в главное меню
+    # Кнопки для возврата
     keyboard = [
-        [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
+        [InlineKeyboardButton("ГЛАВНОЕ МЕНЮ", callback_data="main_menu")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+    await query.message.reply_text("ВЫБЕРИТЕ ДЕЙСТВИЕ:", reply_markup=reply_markup)
 
 def main() -> None:
     """Запуск бота"""

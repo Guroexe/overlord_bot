@@ -11,9 +11,7 @@ from telegram.ext import (
     Application,
     CommandHandler,
     CallbackQueryHandler,
-    ContextTypes,
-    MessageHandler,
-    filters
+    ContextTypes
 )
 from dotenv import load_dotenv
 
@@ -45,10 +43,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка команды /start"""
     user_id = update.effective_user.id
     user_states[user_id] = {"prompt_index": 0}
-    
+
     # Отправка YouTube видео
     await update.message.reply_text(f"🎬 Обучающее видео: {FREE_TRAIN_VIDEO}")
-    
+
     # Отправка описания
     description = (
         "🖌️ OVERLORD AI INK (Free Train)\n\n"
@@ -60,7 +58,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "3. Генерируйте изображения бесплатно!"
     )
     await update.message.reply_text(description)
-    
+
     # Отправка GIF
     gif_path = os.path.join("static", "14.gif")
     with open(gif_path, "rb") as gif_file:
@@ -68,7 +66,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             animation=InputFile(gif_file),
             caption=f"🚀 Начать генерацию! Используй COLAB: {COLAB_URL}"
         )
-    
+
     # Кнопки при старте
     keyboard = [
         [
@@ -83,27 +81,27 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     """Показ примера промта с изображением"""
     query = update.callback_query
     await query.answer()
-    
+
     user_id = query.from_user.id
     user_state = user_states.get(user_id, {"prompt_index": 0})
     current_index = user_state["prompt_index"]
-    
+
     # Получение текущего промта
     prompt_data = PROMPTS[current_index]
     image_path = os.path.join("static", prompt_data["image"])
     prompt_text = prompt_data["prompt"]
-    
+
     # Отправка изображения
     with open(image_path, "rb") as photo_file:
         await query.message.reply_photo(
             photo=InputFile(photo_file),
             caption=prompt_text
         )
-    
+
     # Обновление индекса (циклически)
     next_index = (current_index + 1) % len(PROMPTS)
     user_states[user_id] = {"prompt_index": next_index}
-    
+
     # Кнопки для продолжения
     keyboard = [
         [
@@ -118,7 +116,7 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ главного меню"""
     query = update.callback_query
     await query.answer()
-    
+
     keyboard = [
         [InlineKeyboardButton("OVERLORD AI INK (Free Train)", callback_data="free_train")],
         [InlineKeyboardButton("Полная Версия OVERLORD AI INK PRO", callback_data="pro_version")]
@@ -130,23 +128,23 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     """Повторная отправка стартового сообщения"""
     query = update.callback_query
     await query.answer()
-    
+
     # Повторяем логику команды /start
     await query.message.reply_text(f"🎬 Обучающее видео: {FREE_TRAIN_VIDEO}")
-    
+
     description = (
         "🖌️ OVERLORD AI INK (Free Train)\n\n"
         "Бесплатная версия с 3 стилями генераций изображений..."
     )
     await query.message.reply_text(description)
-    
+
     gif_path = os.path.join("static", "14.gif")
     with open(gif_path, "rb") as gif_file:
         await query.message.reply_animation(
             animation=InputFile(gif_file),
             caption=f"🚀 Начать генерацию! COLAB: {COLAB_URL}"
         )
-    
+
     keyboard = [
         [
             InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
@@ -160,17 +158,16 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     """Информация о PRO версии"""
     query = update.callback_query
     await query.answer()
-    
+
     # Отправка PRO видео
     await query.message.reply_text(f"🎬 PRO Обучение: {PRO_VERSION_VIDEO}")
-    
-   async def your_handler_function(query):
+
     # Описание преимуществ PRO
     pro_features = (
         "🔥 OVERLORD AI INK PRO - Полная Версия с 30+ уникальными стилями!\n\n"
         "Отличия от бесплатной версии:\n"
         "✅ 30+ уникальных моделей стилей\n"
-        "✅ Быстрые генерации.В 4 раза быстрее\n"
+        "✅ Быстрые генерации. В 4 раза быстрее\n"
         "✅ Создание собственных стилей\n"
         "✅ Приоритетные обновления\n"
         "✅ Множество рабочих промтов \n\n"
@@ -185,14 +182,14 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
         ]
         reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
-        
+
         await query.message.reply_animation(
             animation=InputFile(pro_gif_file),
             caption="🔥 PRO версия открывает новые возможности генерации!",
             reply_markup=reply_markup_pro
         )
 
-    # Кнопки для возврата
+    # Кнопка для возврата в главное меню
     keyboard = [
         [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
     ]
@@ -202,16 +199,16 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 def main() -> None:
     """Запуск бота"""
     application = Application.builder().token(TOKEN).build()
-    
+
     # Обработчики команд
     application.add_handler(CommandHandler("start", start))
-    
+
     # Обработчики callback-запросов
     application.add_handler(CallbackQueryHandler(show_prompt, pattern="^show_prompt$"))
     application.add_handler(CallbackQueryHandler(main_menu, pattern="^main_menu$"))
     application.add_handler(CallbackQueryHandler(free_train, pattern="^free_train$"))
     application.add_handler(CallbackQueryHandler(pro_version, pattern="^pro_version$"))
-    
+
     # Запуск бота
     application.run_polling()
 

@@ -164,6 +164,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     # Отправка PRO видео
     await query.message.reply_text(f"🎬 PRO Обучение: {PRO_VERSION_VIDEO}")
     
+   async def your_handler_function(query):
     # Описание преимуществ PRO
     pro_features = (
         "🔥 OVERLORD AI INK PRO - Полная Версия с 30+ уникальными стилями!\n\n"
@@ -177,19 +178,19 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     )
     await query.message.reply_text(pro_features)
 
-     # Отправка PRO GIF с инлайн-кнопкой
-     pro_gif_path = os.path.join("static", "9d.gif")
-     with open(pro_gif_path, "rb") as pro_gif_file:
-     keyboard_pro = [
-         [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
-    ]
-    reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
-    
-    await query.message.reply_animation(
-        animation=InputFile(pro_gif_file),
-        caption="🔥 PRO версия открывает новые возможности генерации!",
-        reply_markup=reply_markup_pro
-    )
+    # Отправка PRO GIF с инлайн-кнопкой
+    pro_gif_path = os.path.join("static", "9d.gif")
+    with open(pro_gif_path, "rb") as pro_gif_file:
+        keyboard_pro = [
+            [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
+        ]
+        reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
+        
+        await query.message.reply_animation(
+            animation=InputFile(pro_gif_file),
+            caption="🔥 PRO версия открывает новые возможности генерации!",
+            reply_markup=reply_markup_pro
+        )
 
     # Кнопки для возврата
     keyboard = [
@@ -197,8 +198,6 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
-
-
 
 def main() -> None:
     """Запуск бота"""

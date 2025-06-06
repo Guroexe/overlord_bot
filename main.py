@@ -33,13 +33,236 @@ if not TOKEN:
     logger.error("Токен бота не найден в переменных окружения!")
     raise ValueError("Токен бота не найден")
 
-FREE_TRAIN_VIDEO = "https://www.youtube.com/watch?v=10b_j5gBAg8"
-PRO_VERSION_VIDEO = "https://www.youtube.com/watch?v=QKLOb6f5L-k"
+# Видео для русской версии
+RU_VIDEOS = {
+    "free_train": "https://www.youtube.com/watch?v=10b_j5gBAg8",
+    "pro_version": "https://www.youtube.com/watch?v=QKLOb6f5L-k",
+    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
+    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
+    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
+}
+
+# Видео для английской версии
+EN_VIDEOS = {
+    "free_train": "https://www.youtube.com/watch?v=Tw18-4U7mts",
+    "pro_version": "https://www.youtube.com/watch?v=kuFBVzjANEo",
+    "ikona_training": "https://www.youtube.com/watch?v=XW-02QiiHDM",
+    "offline_training": "https://www.youtube.com/watch?v=vkgbDB4Rbno",
+    "online_training": "https://www.youtube.com/watch?v=hBfhd88DCZA"
+}
+
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
 TRIBUT_URL = "https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32"
-IKONA_TRAINING_VIDEO = "https://www.youtube.com/watch?v=GX_ZbWx0oYY"
-OFFLINE_TRAINING_VIDEO = "https://www.youtube.com/watch?v=Kopx3whZquc"
-ONLINE_TRAINING_VIDEO = "https://www.youtube.com/watch?v=10b_j5gBAg8"
+
+# Тексты для русской версии
+RU_TEXTS = {
+    "start": (
+        "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
+        "**Бесплатная версия нейросети** для генерации изображений в стиле:\n"
+        "• Sigilism\n"
+        "• Tribal\n"
+        "• Dark Tattoo\n\n"
+        "Создавайте уникальные арты **без ограничений**!\n\n"
+        "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
+        "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
+        "**2.** Настройте параметры генерации:\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
+        "**3.** Генерируйте изображения **бесплатно**!\n\n"
+        "*(создатель - https://t.me/gurovlad)*"
+    ),
+    "pro_features": (
+        "🔥 **OVERLORD AI INK PRO**\n"
+        "**Полная версия с 30+ уникальными стилями!**\n\n"
+        "**ОТЛИЧИЯ ОТ БЕСПЛАТНОЙ ВЕРСИИ:**\n\n"
+        "✅ **30+ уникальных моделей** стилей\n"
+        "✅ **Быстрые генерации** — в 4 раза быстрее\n"
+        "✅ **Создание собственных стилей**\n"
+        "✅ **Приоритетные обновления**\n"
+        "✅ **Множество рабочих промтов**\n\n"
+        "**ПОЛНЫЙ КОНТРОЛЬ НАД ГЕНЕРАЦИЕЙ!**\n\n"
+        "*(создатель - https://t.me/gurovlad)*"
+    ),
+    "ikona_training": (
+        "**ОБУЧЕНИЕ ТАТУ IKONA**\n\n"
+        "Обучение создано для тех, кто хочет **сразу начать колоть СТИЛЬ** и быстро ворваться в индустрию и занять свое место!\n\n"
+        "**ЧТО МЫ ПРЕДОСТАВЛЯЕМ:**\n\n"
+        "🎯 Программу обучения с созданием **собственного стиля эскизов**\n"
+        "🎯 Отточим до идеала **нанесение на кожу**\n"
+        "🎯 Поможем **привлекать клиентов** уже во время обучения\n"
+        "🎯 Развитие **социальных сетей**\n\n"
+        "**ВЫБЕРИТЕ ПРОГРАММУ, КОТОРАЯ ВАМ БОЛЬШЕ ПОДХОДИТ:**"
+    ),
+    "offline_training": (
+        "**ОФФЛАЙН ОБУЧЕНИЕ IKONA**\n"
+        "**Москва и Санкт-Петербург**\n\n"
+        "**ПРОГРАММА ОБУЧЕНИЯ:**\n\n"
+        "👨‍🏫 Занятия с **действующим тату-мастером IKONA**\n"
+        "🎯 Практика на **искусственной коже и живых людях**\n"
+        "🤖 Создание **собственного стиля при помощи ИИ**\n"
+        "💪 Идеальная техника **нанесения на коже**\n\n"
+        "**УСЛОВИЯ:**\n\n"
+        "⏱️ **Срок обучения:** 2 месяца\n"
+        "💰 **Стоимость:** 99 000 рублей\n\n"
+        "**БЕСПЛАТНЫЙ ПЕРВЫЙ УРОК!**\n\n"
+        "Приходите на пробное занятие, где мы:\n"
+        "• Подробно расскажем о программе\n"
+        "• Дадим набить первую татуировку на искусственной коже\n"
+        "• Вы попробуете себя в роли **Тату-Мастера**!"
+    ),
+    "online_training": (
+        "**ОНЛАЙН ОБУЧЕНИЕ IKONA**\n\n"
+        "**ПРОГРАММА СОСТОИТ ИЗ:**\n\n"
+        "🤖 **Блок «Обучение ИИ»** — создание собственного стиля\n"
+        "👨‍💻 **Онлайн уроки с преподавателем** — техника нанесения\n\n"
+        "**КАК ПРОХОДИТ ОБУЧЕНИЕ:**\n\n"
+        "📱 **Видеозвонки с преподавателем** — достаточно для правильной постановки руки и передачи важных знаний\n\n"
+        "📦 **Профессиональная тату-машинка** — высылаем со всеми необходимыми компонентами для домашнего обучения\n\n"
+        "🏢 **Поддержка в выборе салона** — поможем найти салон в вашем городе\n\n"
+        "👥 **Поиск модели** — организуем полноценный сеанс под контролем преподавателя для вашей уверенности\n\n"
+        "**УСЛОВИЯ:**\n\n"
+        "⏱️ **Срок обучения:** 2 месяца\n"
+        "💰 **Стоимость:** 79 000 рублей"
+    ),
+    "contact_for_trial": (
+        "**ЗАПИСЬ НА ПРОБНЫЙ УРОК / ОБУЧЕНИЕ**\n\n"
+        "Для записи на пробный урок, обучение или получения подробной информации напишите с указанием вашего пожелания:\n\n"
+        "👤 **@vladguro**\n\n"
+        "**Ответим в ближайшее время!**"
+    ),
+    "contact_for_details": (
+        "**ПОДРОБНЕЕ / ЗАПИСАТЬСЯ**\n\n"
+        "Для записи на обучение или получения подробной информации напишите с указанием вашего пожелания:\n\n"
+        "👤 **@vladguro**\n\n"
+        "**Ответим в ближайшее время!**"
+    ),
+    "prompt_not_found": "⚠️ Примеры промтов временно недоступны",
+    "file_not_found": "⚠️ Файл не найден",
+    "error": "⚠️ Произошла ошибка. Попробуйте позже.",
+    "choose_action": "Выберите действие:",
+    "what_next": "Что дальше?",
+    "main_menu": "**ГЛАВНОЕ МЕНЮ:**",
+    "pro_caption": "🔥 PRO версия открывает новые возможности генерации!",
+    "get_pro": "🔥 Оформить PRO",
+    "back_to_main": "Главное меню",
+    "more_examples": "Ещё пример",
+    "prompt_example": "Пример промта",
+    "full_version": "ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +",
+    "ikona_training_btn": "Обучение Тату IKONA",
+    "free_train_btn": "OVERLORD AI INK (Free Train)",
+    "offline_training_btn": "Оффлайн обучение IKONA в Москве и Питере",
+    "online_training_btn": "Онлайн обучение IKONA",
+    "trial_lesson": "Записаться на Пробный Урок / Обучение",
+    "more_details": "Подробнее / Записаться"
+}
+
+# Тексты для английской версии
+EN_TEXTS = {
+    "start": (
+        "🖌️ **OVERLORD AI INK (Free Trial)**\n\n"
+        "**Free version of neural network** for generating images in styles:\n"
+        "• Sigilism\n"
+        "• Tribal\n"
+        "• Dark Tattoo\n\n"
+        "Create unique artworks **without limitations**!\n\n"
+        "**HOW TO USE:**\n\n"
+        "**1.** Enter text prompt in English or use ready examples\n\n"
+        "**2.** Configure generation parameters:\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
+        "**3.** Generate images **for free**!\n\n"
+        "*(creator - https://t.me/gurovlad)*"
+    ),
+    "pro_features": (
+        "🔥 **OVERLORD AI INK PRO**\n"
+        "**Full version with 30+ unique styles!**\n\n"
+        "**DIFFERENCES FROM FREE VERSION:**\n\n"
+        "✅ **30+ unique style** models\n"
+        "✅ **Faster generation** — 4 times faster\n"
+        "✅ **Create your own styles**\n"
+        "✅ **Priority updates**\n"
+        "✅ **Many working prompts**\n\n"
+        "**FULL CONTROL OVER GENERATION!**\n\n"
+        "*(creator - https://t.me/gurovlad)*"
+    ),
+    "ikona_training": (
+        "**IKONA TATTOO TRAINING**\n\n"
+        "The training is created for those who want to **start tattooing STYLE right away** and quickly break into the industry and take their place!\n\n"
+        "**WHAT WE PROVIDE:**\n\n"
+        "🎯 Training program with creation of **your own sketch style**\n"
+        "🎯 Perfecting **skin application** technique\n"
+        "🎯 Help **attracting clients** already during training\n"
+        "🎯 Development of **social networks**\n\n"
+        "**CHOOSE THE PROGRAM THAT SUITS YOU BEST:**"
+    ),
+    "offline_training": (
+        "**OFFLINE IKONA TRAINING**\n"
+        "**Moscow and St. Petersburg**\n\n"
+        "**TRAINING PROGRAM:**\n\n"
+        "👨‍🏫 Classes with **current IKONA tattoo master**\n"
+        "🎯 Practice on **artificial skin and live people**\n"
+        "🤖 Creating **your own style using AI**\n"
+        "💪 Perfect **skin application** technique\n\n"
+        "**CONDITIONS:**\n\n"
+        "⏱️ **Training duration:** 2 months\n"
+        "💰 **Price:** 99,000 rubles\n\n"
+        "**FREE FIRST LESSON!**\n\n"
+        "Come to a trial lesson where we will:\n"
+        "• Tell you in detail about the program\n"
+        "• Let you make your first tattoo on artificial skin\n"
+        "• You will try yourself as a **Tattoo Master**!"
+    ),
+    "online_training": (
+        "**ONLINE IKONA TRAINING**\n\n"
+        "**THE PROGRAM CONSISTS OF:**\n\n"
+        "🤖 **"AI Training" block** — creating your own style\n"
+        "👨‍💻 **Online lessons with teacher** — application technique\n\n"
+        "**HOW THE TRAINING GOES:**\n\n"
+        "📱 **Video calls with teacher** — enough for correct hand positioning and transfer of important knowledge\n\n"
+        "📦 **Professional tattoo machine** — we send with all necessary components for home training\n\n"
+        "🏢 **Support in choosing a salon** — we will help you find a salon in your city\n\n"
+        "👥 **Model search** — we will organize a full session under the supervision of a teacher for your confidence\n\n"
+        "**CONDITIONS:**\n\n"
+        "⏱️ **Training duration:** 2 months\n"
+        "💰 **Price:** 79,000 rubles"
+    ),
+    "contact_for_trial": (
+        "**SIGN UP FOR A TRIAL LESSON / TRAINING**\n\n"
+        "To sign up for a trial lesson, training or to get more information, write indicating your request:\n\n"
+        "👤 **@vladguro**\n\n"
+        "**We will reply as soon as possible!**"
+    ),
+    "contact_for_details": (
+        "**MORE DETAILS / SIGN UP**\n\n"
+        "To sign up for training or to get more information, write indicating your request:\n\n"
+        "👤 **@vladguro**\n\n"
+        "**We will reply as soon as possible!**"
+    ),
+    "prompt_not_found": "⚠️ Prompt examples temporarily unavailable",
+    "file_not_found": "⚠️ File not found",
+    "error": "⚠️ An error occurred. Please try again later.",
+    "choose_action": "Choose action:",
+    "what_next": "What's next?",
+    "main_menu": "**MAIN MENU:**",
+    "pro_caption": "🔥 PRO version opens new generation possibilities!",
+    "get_pro": "🔥 Get PRO",
+    "back_to_main": "Main menu",
+    "more_examples": "More examples",
+    "prompt_example": "Prompt example",
+    "full_version": "FULL VERSION OVERLORD INK AI PRO +",
+    "ikona_training_btn": "IKONA Tattoo Training",
+    "free_train_btn": "OVERLORD AI INK (Free Trial)",
+    "offline_training_btn": "Offline IKONA training in Moscow and St. Petersburg",
+    "online_training_btn": "Online IKONA training",
+    "trial_lesson": "Sign up for Trial Lesson / Training",
+    "more_details": "More details / Sign up"
+}
 
 # Загрузка промтов
 try:
@@ -59,58 +282,73 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         # Инициализация состояния пользователя
         context.user_data["prompt_index"] = 0
         
+        # Кнопки выбора языка
+        keyboard = [
+            [
+                InlineKeyboardButton("🇷🇺 Русский", callback_data="set_lang_ru"),
+                InlineKeyboardButton("🇺🇸 English", callback_data="set_lang_en")
+            ]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text("Please select language / Пожалуйста, выберите язык:", reply_markup=reply_markup)
+        
+    except Exception as e:
+        logger.error(f"Ошибка в команде /start: {str(e)}")
+        await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+
+async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str) -> None:
+    """Установка языка и показ главного меню"""
+    try:
+        query = update.callback_query
+        await query.answer()
+        
+        # Сохраняем выбранный язык
+        context.user_data["lang"] = lang
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
+        
         # Отправка YouTube видео
-        await update.message.reply_text(f"🎬 Обучающее видео: {FREE_TRAIN_VIDEO}")
+        await query.message.reply_text(f"🎬 {texts['training_video'] if lang == 'ru' else 'Training video'}: {videos['free_train']}")
         
         # Отправка описания
-        description = (
-            "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
-            "**Бесплатная версия нейросети** для генерации изображений в стиле:\n"
-            "• Sigilism\n"
-            "• Tribal\n"
-            "• Dark Tattoo\n\n"
-            "Создавайте уникальные арты **без ограничений**!\n\n"
-            "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
-            "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
-            "**2.** Настройте параметры генерации:\n"
-            "   • Sampling method: **DPM++ 2M SDE**\n"
-            "   • Steps: **20**\n"
-            "   • Width: **720**\n"
-            "   • Height: **980**\n"
-            "   • CFG Scale: **4**\n\n"
-            "**3.** Генерируйте изображения **бесплатно**!\n\n"
-            "*(создатель - https://t.me/gurovlad)*"
-        )
-        await update.message.reply_text(description, parse_mode='Markdown')
+        await query.message.reply_text(texts["start"], parse_mode='Markdown')
         
         # Отправка GIF
         gif_path = os.path.join("static", "14.gif")
         try:
             with open(gif_path, "rb") as gif_file:
-                await update.message.reply_animation(
+                await query.message.reply_animation(
                     animation=InputFile(gif_file),
-                    caption=f"🚀 Начать генерацию! Используй COLAB: {COLAB_URL}"
+                    caption=f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}! {texts['use_colab'] if lang == 'ru' else 'Use COLAB'}: {COLAB_URL}"
                 )
         except FileNotFoundError:
             logger.error(f"Файл {gif_path} не найден")
-            await update.message.reply_text(f"🚀 Начать генерацию: {COLAB_URL}")
+            await query.message.reply_text(f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}: {COLAB_URL}")
         
         # Кнопки при старте
         keyboard = [
             [
-                InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
-                InlineKeyboardButton("ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +", callback_data="pro_version")
+                InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
+                InlineKeyboardButton(texts["full_version"], callback_data="pro_version")
             ],
             [
-                InlineKeyboardButton("Обучение Тату IKONA", callback_data="ikona_training")
+                InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
-        logger.error(f"Ошибка в команде /start: {str(e)}")
+        logger.error(f"Ошибка в set_language: {str(e)}")
         await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+
+async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Установка русского языка"""
+    await set_language(update, context, "ru")
+
+async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Установка английского языка"""
+    await set_language(update, context, "en")
 
 async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ примера промта с изображением"""
@@ -118,8 +356,11 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         query = update.callback_query
         await query.answer()
         
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        
         if not PROMPTS:
-            await query.message.reply_text("⚠️ Примеры промтов временно недоступны")
+            await query.message.reply_text(texts["prompt_not_found"])
             return
             
         # Получение текущего индекса
@@ -145,12 +386,12 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         # Кнопки для продолжения
         keyboard = [
             [
-                InlineKeyboardButton("Ещё пример", callback_data="show_prompt"),
-                InlineKeyboardButton("Главное меню", callback_data="main_menu")
+                InlineKeyboardButton(texts["more_examples"], callback_data="show_prompt"),
+                InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("Что дальше?", reply_markup=reply_markup)
+        await query.message.reply_text(texts["what_next"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в show_prompt: {str(e)}")
@@ -162,13 +403,16 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         query = update.callback_query
         await query.answer()
         
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        
         keyboard = [
-            [InlineKeyboardButton("OVERLORD AI INK (Free Train)", callback_data="free_train")],
-            [InlineKeyboardButton("ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +", callback_data="pro_version")],
-            [InlineKeyboardButton("Обучение Тату IKONA", callback_data="ikona_training")]
+            [InlineKeyboardButton(texts["free_train_btn"], callback_data="free_train")],
+            [InlineKeyboardButton(texts["full_version"], callback_data="pro_version")],
+            [InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("**ГЛАВНОЕ МЕНЮ:**", reply_markup=reply_markup, parse_mode='Markdown')
+        await query.message.reply_text(texts["main_menu"], reply_markup=reply_markup, parse_mode='Markdown')
         
     except Exception as e:
         logger.error(f"Ошибка в main_menu: {str(e)}")
@@ -179,36 +423,34 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         query = update.callback_query
         await query.answer()
         
-        await query.message.reply_text(f"🎬 Обучающее видео: {FREE_TRAIN_VIDEO}")
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        description = (
-            "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
-            "**Бесплатная версия** с 3 стилями генераций изображений...\n\n"
-            "*(создатель - https://t.me/gurovlad)*"
-        )
-        await query.message.reply_text(description, parse_mode='Markdown')
+        await query.message.reply_text(f"🎬 {texts['training_video'] if lang == 'ru' else 'Training video'}: {videos['free_train']}")
+        await query.message.reply_text(texts["start"], parse_mode='Markdown')
         
         gif_path = os.path.join("static", "14.gif")
         try:
             with open(gif_path, "rb") as gif_file:
                 await query.message.reply_animation(
                     animation=InputFile(gif_file),
-                    caption=f"🚀 Начать генерацию! COLAB: {COLAB_URL}"
+                    caption=f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}! {texts['use_colab'] if lang == 'ru' else 'Use COLAB'}: {COLAB_URL}"
                 )
         except FileNotFoundError:
-            await query.message.reply_text(f"🚀 Начать генерацию: {COLAB_URL}")
+            await query.message.reply_text(f"🚀 {texts['start_generating'] if lang == 'ru' else 'Start generating'}: {COLAB_URL}")
         
         keyboard = [
             [
-                InlineKeyboardButton("Пример промта", callback_data="show_prompt"),
-                InlineKeyboardButton("ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +", callback_data="pro_version")
+                InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
+                InlineKeyboardButton(texts["full_version"], callback_data="pro_version")
             ],
             [
-                InlineKeyboardButton("Обучение Тату IKONA", callback_data="ikona_training")
+                InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в free_train: {str(e)}")
@@ -219,54 +461,46 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         query = update.callback_query
         await query.answer()
         
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
+        
         # Отправка PRO видео
-        await query.message.reply_text(f"🎬 PRO Обучение: {PRO_VERSION_VIDEO}")
+        await query.message.reply_text(f"🎬 {texts['pro_training'] if lang == 'ru' else 'PRO Training'}: {videos['pro_version']}")
         
         # Описание преимуществ PRO
-        pro_features = (
-            "🔥 **OVERLORD AI INK PRO**\n"
-            "**Полная версия с 30+ уникальными стилями!**\n\n"
-            "**ОТЛИЧИЯ ОТ БЕСПЛАТНОЙ ВЕРСИИ:**\n\n"
-            "✅ **30+ уникальных моделей** стилей\n"
-            "✅ **Быстрые генерации** — в 4 раза быстрее\n"
-            "✅ **Создание собственных стилей**\n"
-            "✅ **Приоритетные обновления**\n"
-            "✅ **Множество рабочих промтов**\n\n"
-            "**ПОЛНЫЙ КОНТРОЛЬ НАД ГЕНЕРАЦИЕЙ!**\n\n"
-            "*(создатель - https://t.me/gurovlad)*"
-        )
-        await query.message.reply_text(pro_features, parse_mode='Markdown')
+        await query.message.reply_text(texts["pro_features"], parse_mode='Markdown')
 
         # Отправка PRO GIF с инлайн-кнопкой
         pro_gif_path = os.path.join("static", "9d.gif")
         try:
             with open(pro_gif_path, "rb") as pro_gif_file:
                 keyboard_pro = [
-                    [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
+                    [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
                 ]
                 reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
                 
                 await query.message.reply_animation(
                     animation=InputFile(pro_gif_file),
-                    caption="🔥 PRO версия открывает новые возможности генерации!",
+                    caption=texts["pro_caption"],
                     reply_markup=reply_markup_pro
                 )
         except FileNotFoundError:
             keyboard_pro = [
-                [InlineKeyboardButton("🔥 Оформить PRO", url=TRIBUT_URL)]
+                [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
             ]
             reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
             await query.message.reply_text(
-                "🔥 PRO версия открывает новые возможности генерации!",
+                texts["pro_caption"],
                 reply_markup=reply_markup_pro
             )
 
         # Кнопки для возврата
         keyboard = [
-            [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
+            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в pro_version: {str(e)}")
@@ -277,29 +511,23 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         query = update.callback_query
         await query.answer()
         
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
+        
         # Отправка видео
-        await query.message.reply_text(f"🎬 Обучение IKONA: {IKONA_TRAINING_VIDEO}")
+        await query.message.reply_text(f"🎬 {texts['ikona_training_video'] if lang == 'ru' else 'IKONA Training video'}: {videos['ikona_training']}")
         
         # Описание обучения
-        description = (
-            "**ОБУЧЕНИЕ ТАТУ IKONA**\n\n"
-            "Обучение создано для тех, кто хочет **сразу начать колоть СТИЛЬ** и быстро ворваться в индустрию и занять свое место!\n\n"
-            "**ЧТО МЫ ПРЕДОСТАВЛЯЕМ:**\n\n"
-            "🎯 Программу обучения с созданием **собственного стиля эскизов**\n"
-            "🎯 Отточим до идеала **нанесение на кожу**\n"
-            "🎯 Поможем **привлекать клиентов** уже во время обучения\n"
-            "🎯 Развитие **социальных сетей**\n\n"
-            "**ВЫБЕРИТЕ ПРОГРАММУ, КОТОРАЯ ВАМ БОЛЬШЕ ПОДХОДИТ:**"
-        )
-        await query.message.reply_text(description, parse_mode='Markdown')
+        await query.message.reply_text(texts["ikona_training"], parse_mode='Markdown')
         
         # Кнопки выбора программы
         keyboard = [
-            [InlineKeyboardButton("Оффлайн обучение IKONA в Москве и Питере", callback_data="offline_training")],
-            [InlineKeyboardButton("Онлайн обучение IKONA", callback_data="online_training")]
+            [InlineKeyboardButton(texts["offline_training_btn"], callback_data="offline_training")],
+            [InlineKeyboardButton(texts["online_training_btn"], callback_data="online_training")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("Выберите формат обучения:", reply_markup=reply_markup)
+        await query.message.reply_text(texts["choose_training_format"] if lang == 'ru' else "Choose training format:", reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в ikona_training: {str(e)}")
@@ -310,36 +538,23 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         query = update.callback_query
         await query.answer()
         
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
+        
         # Отправка видео
-        await query.message.reply_text(f"🎬 Оффлайн обучение: {OFFLINE_TRAINING_VIDEO}")
+        await query.message.reply_text(f"🎬 {texts['offline_training_video'] if lang == 'ru' else 'Offline training video'}: {videos['offline_training']}")
         
         # Описание оффлайн обучения
-        description = (
-            "**ОФФЛАЙН ОБУЧЕНИЕ IKONA**\n"
-            "**Москва и Санкт-Петербург**\n\n"
-            "**ПРОГРАММА ОБУЧЕНИЯ:**\n\n"
-            "👨‍🏫 Занятия с **действующим тату-мастером IKONA**\n"
-            "🎯 Практика на **искусственной коже и живых людях**\n"
-            "🤖 Создание **собственного стиля при помощи ИИ**\n"
-            "💪 Идеальная техника **нанесения на коже**\n\n"
-            "**УСЛОВИЯ:**\n\n"
-            "⏱️ **Срок обучения:** 2 месяца\n"
-            "💰 **Стоимость:** 99 000 рублей\n\n"
-            "**БЕСПЛАТНЫЙ ПЕРВЫЙ УРОК!**\n\n"
-            "Приходите на пробное занятие, где мы:\n"
-            "• Подробно расскажем о программе\n"
-            "• Дадим набить первую татуировку на искусственной коже\n"
-            "• Вы попробуете себя в роли **Тату-Мастера**!"
-        )
-        await query.message.reply_text(description, parse_mode='Markdown')
+        await query.message.reply_text(texts["offline_training"], parse_mode='Markdown')
         
         # Кнопки
         keyboard = [
-            [InlineKeyboardButton("Записаться на Пробный Урок / Обучение", callback_data="contact_for_trial")],
-            [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
+            [InlineKeyboardButton(texts["trial_lesson"], callback_data="contact_for_trial")],
+            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в offline_training: {str(e)}")
@@ -350,33 +565,23 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         query = update.callback_query
         await query.answer()
         
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
+        
         # Отправка видео
-        await query.message.reply_text(f"🎬 Онлайн обучение: {ONLINE_TRAINING_VIDEO}")
+        await query.message.reply_text(f"🎬 {texts['online_training_video'] if lang == 'ru' else 'Online training video'}: {videos['online_training']}")
         
         # Описание онлайн обучения
-        description = (
-            "**ОНЛАЙН ОБУЧЕНИЕ IKONA**\n\n"
-            "**ПРОГРАММА СОСТОИТ ИЗ:**\n\n"
-            "🤖 **Блок «Обучение ИИ»** — создание собственного стиля\n"
-            "👨‍💻 **Онлайн уроки с преподавателем** — техника нанесения\n\n"
-            "**КАК ПРОХОДИТ ОБУЧЕНИЕ:**\n\n"
-            "📱 **Видеозвонки с преподавателем** — достаточно для правильной постановки руки и передачи важных знаний\n\n"
-            "📦 **Профессиональная тату-машинка** — высылаем со всеми необходимыми компонентами для домашнего обучения\n\n"
-            "🏢 **Поддержка в выборе салона** — поможем найти салон в вашем городе\n\n"
-            "👥 **Поиск модели** — организуем полноценный сеанс под контролем преподавателя для вашей уверенности\n\n"
-            "**УСЛОВИЯ:**\n\n"
-            "⏱️ **Срок обучения:** 2 месяца\n"
-            "💰 **Стоимость:** 79 000 рублей"
-        )
-        await query.message.reply_text(description, parse_mode='Markdown')
+        await query.message.reply_text(texts["online_training"], parse_mode='Markdown')
         
         # Кнопки
         keyboard = [
-            [InlineKeyboardButton("Подробнее / Записаться", callback_data="contact_for_details")],
-            [InlineKeyboardButton("Главное меню", callback_data="main_menu")]
+            [InlineKeyboardButton(texts["more_details"], callback_data="contact_for_details")],
+            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await query.message.reply_text("Выберите действие:", reply_markup=reply_markup)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в online_training: {str(e)}")
@@ -387,13 +592,10 @@ async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         query = update.callback_query
         await query.answer()
         
-        contact_text = (
-            "**ЗАПИСЬ НА ПРОБНЫЙ УРОК / ОБУЧЕНИЕ**\n\n"
-            "Для записи на пробный урок, обучение или получения подробной информации напишите с указанием вашего пожелания:\n\n"
-            "👤 **@vladguro**\n\n"
-            "**Ответим в ближайшее время!**"
-        )
-        await query.message.reply_text(contact_text, parse_mode='Markdown')
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        
+        await query.message.reply_text(texts["contact_for_trial"], parse_mode='Markdown')
         
     except Exception as e:
         logger.error(f"Ошибка в contact_for_trial: {str(e)}")
@@ -404,13 +606,10 @@ async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE
         query = update.callback_query
         await query.answer()
         
-        contact_text = (
-            "**ПОДРОБНЕЕ / ЗАПИСАТЬСЯ**\n\n"
-            "Для записи на обучение или получения подробной информации напишите с указанием вашего пожелания:\n\n"
-            "👤 **@vladguro**\n\n"
-            "**Ответим в ближайшее время!**"
-        )
-        await query.message.reply_text(contact_text, parse_mode='Markdown')
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        
+        await query.message.reply_text(texts["contact_for_details"], parse_mode='Markdown')
         
     except Exception as e:
         logger.error(f"Ошибка в contact_for_details: {str(e)}")
@@ -418,7 +617,9 @@ async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка текстовых сообщений"""
     try:
-        await update.message.reply_text("Пожалуйста, используйте кнопки меню")
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        await update.message.reply_text(texts["use_buttons"] if lang == 'ru' else "Please use menu buttons")
     except Exception as e:
         logger.error(f"Ошибка в handle_text: {str(e)}")
 
@@ -431,6 +632,8 @@ def main() -> None:
         application.add_handler(CommandHandler("start", start))
         
         # Обработчики callback-запросов
+        application.add_handler(CallbackQueryHandler(set_lang_ru, pattern="^set_lang_ru$"))
+        application.add_handler(CallbackQueryHandler(set_lang_en, pattern="^set_lang_en$"))
         application.add_handler(CallbackQueryHandler(show_prompt, pattern="^show_prompt$"))
         application.add_handler(CallbackQueryHandler(main_menu, pattern="^main_menu$"))
         application.add_handler(CallbackQueryHandler(free_train, pattern="^free_train$"))

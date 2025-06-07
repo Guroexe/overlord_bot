@@ -36,8 +36,8 @@ if not TOKEN:
 
 # Видео для русской версии
 RU_VIDEOS = {
-    "free_train": "https://www.youtube.com/watch?v=10b_j5gBAg8",
-    "pro_version": "https://www.youtube.com/watch?v=QKLOb6f5L-k",
+    "free_train": "https://youtu.be/mxxbhZ8SxTU",
+    "pro_version": "https://youtu.be/k4W_Cf29UUE",
     "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
     "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
     "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
@@ -45,11 +45,11 @@ RU_VIDEOS = {
 
 # Видео для английской версии
 EN_VIDEOS = {
-    "free_train": "https://www.youtube.com/watch?v=Tw18-4U7mts",
-    "pro_version": "https://www.youtube.com/watch?v=kuFBVzjANEo",
-    "ikona_training": "https://www.youtube.com/watch?v=XW-02QiiHDM",
-    "offline_training": "https://www.youtube.com/watch?v=vkgbDB4Rbno",
-    "online_training": "https://www.youtube.com/watch?v=hBfhd88DCZA"
+    "free_train": "https://youtu.be/RcLS9A24Kss",
+    "pro_version": "https://youtu.be/XUO5tLbIBxM",
+    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
+    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
+    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
 }
 
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"

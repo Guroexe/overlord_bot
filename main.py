@@ -37,7 +37,7 @@ if not TOKEN:
 # Видео для русской версии
 RU_VIDEOS = {
     "free_train": "https://youtu.be/mxxbhZ8SxTU",
-    "pro_version": "https://youtu.be/k4W_Cf29UUE",
+    "pro_version": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR",
     "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
     "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
     "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
@@ -46,7 +46,7 @@ RU_VIDEOS = {
 # Видео для английской версии
 EN_VIDEOS = {
     "free_train": "https://youtu.be/RcLS9A24Kss",
-    "pro_version": "https://youtu.be/XUO5tLbIBxM",
+    "pro_version": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w",
     "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
     "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
     "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"

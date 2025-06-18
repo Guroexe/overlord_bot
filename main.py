@@ -681,7 +681,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         await update.message.reply_text(
             texts["use_buttons"],
-            reply_markup=InlineKeyboardMarkup([
+            reply_markup=InlineKeyboardMarkup(
                 [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
             )
         )

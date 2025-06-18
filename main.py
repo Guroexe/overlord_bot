@@ -37,7 +37,7 @@ if not TOKEN:
 # Видео для русской версии (теперь с возможностью хранения file_id - для ссылок это неактуально, но для структуры оставлено)
 RU_VIDEOS = {
     "free_train": {"url": "https://youtu.be/mxxbhZ8SxTU"},
-    "pro_version": {"url": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR"},
+    "pro_version": {"url": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Z_pArWAZaisSKR"},
     "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY"},
     "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc"},
     "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8"}
@@ -274,7 +274,7 @@ try:
     logger.info(f"Успешно загружено {len(PROMPTS)} промтов")
 except Exception as e:
     logger.error(f"Ошибка загрузки prompts.json: {str(e)}")
-    PROMPTS = []
+    PROMPTS =
 
 # Глобальное хранилище для file_id GIF-файлов, чтобы не загружать их повторно
 # Эти ID будут сбрасываться при перезапуске бота, для постоянного хранения нужна база данных/файл
@@ -341,7 +341,7 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
             
             if new_file_id:
                 file_id_store[file_name] = new_file_id
-                logger.info(f"Медиафайл '{file_name}' отправлен с диска и сохранен file_id: {new_file_id}")
+            logger.info(f"Медиафайл '{file_name}' отправлен с диска и сохранен file_id: {new_file_id}")
             else:
                 logger.error(f"Не удалось получить file_id для '{file_name}' после отправки.")
                 # Fallback: send text if file_id not obtained
@@ -363,12 +363,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data["prompt_index"] = 0
         
         # Кнопки выбора языка
-        keyboard = [
-            [
-                InlineKeyboardButton("🇷🇺 Русский", callback_data="set_lang_ru"),
-                InlineKeyboardButton("🇺🇸 English", callback_data="set_lang_en")
-            ]
-        ]
+        keyboard =
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text("Please select language / Пожалуйста, выберите язык:", reply_markup=reply_markup)
         
@@ -404,15 +399,11 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         )
         
         # 3. Кнопки основного меню
-        keyboard = [
-            [
-                InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
+        keyboard =, callback_data="show_prompt"),
                 InlineKeyboardButton(texts["full_version"], callback_data="pro_version")
             ],
-            [
-                InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
+           , callback_data="ikona_training")
             ]
-        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
@@ -447,28 +438,24 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         current_index = context.user_data.get("prompt_index", 0)
         prompt_data = PROMPTS[current_index]
         
-        # Отправляем фото
+        # Обновление индекса
+        next_index = (current_index + 1) % len(PROMPTS)
+        context.user_data["prompt_index"] = next_index
+
+        # Кнопки для продолжения
+        keyboard =, callback_data="show_prompt"),
+                InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")
+            ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        # Отправляем фото с прикрепленными кнопками
         await send_media_with_file_id(
             query.message,
             "photo",
             prompt_data["image"], # Имя файла, например "1.png"
-            caption=prompt_data["prompt"]
+            caption=prompt_data["prompt"],
+            reply_markup=reply_markup # <--- Ключевое изменение: передаем reply_markup напрямую
         )
-        
-        # Обновление индекса
-        next_index = (current_index + 1) % len(PROMPTS)
-        context.user_data["prompt_index"] = next_index
-        
-        # Кнопки для продолжения
-        keyboard = [
-            [
-                InlineKeyboardButton(texts["more_examples"], callback_data="show_prompt"),
-                InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")
-            ]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        # Send the "What's next?" message *after* the image, to ensure proper ordering
-        await query.message.reply_text(texts["what_next"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в show_prompt: {str(e)}")
@@ -484,11 +471,9 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        keyboard = [
-            [InlineKeyboardButton(texts["free_train_btn"], callback_data="free_train")],
-            [InlineKeyboardButton(texts["full_version"], callback_data="pro_version")],
-            [InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")]
-        ]
+        keyboard =, callback_data="free_train")],
+           , callback_data="pro_version")],
+           , callback_data="ikona_training")]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["main_menu"], reply_markup=reply_markup, parse_mode='Markdown')
         
@@ -522,15 +507,11 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
         
         # 3. Кнопки основного меню
-        keyboard = [
-            [
-                InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
+        keyboard =, callback_data="show_prompt"),
                 InlineKeyboardButton(texts["full_version"], callback_data="pro_version")
             ],
-            [
-                InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
+           , callback_data="ikona_training")
             ]
-        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
@@ -557,9 +538,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         # Concatenate pro_features and pro_caption with two newlines for better spacing
         caption_text = f"{texts['pro_features']}\n\n{texts['pro_caption']}" 
         
-        keyboard_pro = [
-            [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
-        ]
+        keyboard_pro =, url=TRIBUT_URL)]
         reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
         
         await send_media_with_file_id(
@@ -571,9 +550,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         )
 
         # 3. Кнопки для возврата
-        keyboard = [
-            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
-        ]
+        keyboard =, callback_data="main_menu")]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
@@ -599,10 +576,8 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await query.message.reply_text(texts["ikona_training"], parse_mode='Markdown')
         
         # Кнопки выбора программы
-        keyboard = [
-            [InlineKeyboardButton(texts["offline_training_btn"], callback_data="offline_training")],
-            [InlineKeyboardButton(texts["online_training_btn"], callback_data="online_training")]
-        ]
+        keyboard =, callback_data="offline_training")],
+           , callback_data="online_training")]
         reply_markup = InlineKeyboardMarkup(keyboard)
         menu_text = "Выберите формат обучения:" if lang == "ru" else "Choose training format:"
         await query.message.reply_text(menu_text, reply_markup=reply_markup)
@@ -629,10 +604,8 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         await query.message.reply_text(texts["offline_training"], parse_mode='Markdown')
         
         # Кнопки
-        keyboard = [
-            [InlineKeyboardButton(texts["trial_lesson"], callback_data="contact_for_trial")],
-            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
-        ]
+        keyboard =, callback_data="contact_for_trial")],
+           , callback_data="main_menu")]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
@@ -658,10 +631,8 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         await query.message.reply_text(texts["online_training"], parse_mode='Markdown')
         
         # Кнопки
-        keyboard = [
-            [InlineKeyboardButton(texts["more_details"], callback_data="contact_for_details")],
-            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
-        ]
+        keyboard =, callback_data="contact_for_details")],
+           , callback_data="main_menu")]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         

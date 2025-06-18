@@ -2,13 +2,11 @@
 import logging
 import json
 import os
-import asyncio
 from telegram import (
     Update,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    InputFile,
-    InputMediaAnimation
+    InputFile
 )
 from telegram.ext import (
     Application,
@@ -18,10 +16,9 @@ from telegram.ext import (
     MessageHandler,
     filters
 )
-from telegram.error import RetryAfter, TimedOut, BadRequest
 from dotenv import load_dotenv
 
-# --- Инициализация ---
+# Загрузка переменных окружения
 load_dotenv()
 
 # Настройка логгирования
@@ -31,36 +28,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Проверка токена
+# Константы
 TOKEN = os.getenv("TOKEN")
 if not TOKEN:
-    logger.error("Токен бота не найден!")
-    raise ValueError("Требуется токен бота")
+    logger.error("Токен бота не найден в переменных окружения!")
+    raise ValueError("Токен бота не найден")
 
-# --- Кэширование ресурсов ---
-class MediaCache:
-    def __init__(self):
-        self.start_gif = None
-        self.pro_gif = None
-    
-    async def load(self):
-        try:
-            # Для InputMediaAnimation файлы должны быть открыты в бинарном режиме
-            # и переданы как bytes. Рекомендуется использовать InputFile для отправки файлов.
-            # Если вы хотите кэшировать сами байты, то так:
-            with open(os.path.join("static", "14.gif"), "rb") as f:
-                self.start_gif = InputFile(f.read()) # Используем InputFile для отправки
-            with open(os.path.join("static", "9d.gif"), "rb") as f:
-                self.pro_gif = InputFile(f.read()) # Используем InputFile для отправки
-            logger.info("Медиафайлы загружены в кэш")
-        except FileNotFoundError:
-            logger.error("Один или несколько медиафайлов не найдены в папке 'static'. Убедитесь, что файлы '14.gif' и '9d.gif' существуют.")
-        except Exception as e:
-            logger.error(f"Ошибка загрузки медиа: {e}")
-
-media_cache = MediaCache()
-
-# --- Конфигурация контента ---
+# Видео для русской версии
 RU_VIDEOS = {
     "free_train": "https://youtu.be/mxxbhZ8SxTU",
     "pro_version": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR",
@@ -69,6 +43,7 @@ RU_VIDEOS = {
     "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
 }
 
+# Видео для английской версии
 EN_VIDEOS = {
     "free_train": "https://youtu.be/RcLS9A24Kss",
     "pro_version": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w",
@@ -92,11 +67,11 @@ RU_TEXTS = {
         "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
         "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
         "**2.** Настройте параметры генерации:\n"
-        "   • Sampling method: **DPM++ 2M SDE**\n"
-        "   • Steps: **20**\n"
-        "   • Width: **720**\n"
-        "   • Height: **980**\n"
-        "   • CFG Scale: **4**\n\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
         "**3.** Генерируйте изображения **бесплатно**!\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
@@ -167,7 +142,7 @@ RU_TEXTS = {
     ),
     "prompt_not_found": "⚠️ Примеры промтов временно недоступны",
     "file_not_found": "⚠️ Файл не найден",
-    "error": "⚠️ Если не появились кнопки, нажмите /start",
+    "error": "⚠️ Если не появились кнопки, нажмите /start ",
     "choose_action": "Выберите действие:",
     "what_next": "Что дальше?",
     "main_menu": "**ГЛАВНОЕ МЕНЮ:**",
@@ -183,9 +158,7 @@ RU_TEXTS = {
     "online_training_btn": "Онлайн обучение IKONA",
     "trial_lesson": "Записаться на Пробный Урок / Обучение",
     "more_details": "Подробнее / Записаться",
-    "use_buttons": "Пожалуйста, используйте кнопки меню",
-    "training_video": "Видео обучения:",
-    "start_generating": "Начните генерацию!"
+    "use_buttons": "Пожалуйста, используйте кнопки меню"
 }
 
 # Тексты для английской версии
@@ -200,11 +173,11 @@ EN_TEXTS = {
         "**HOW TO USE:**\n\n"
         "**1.** Enter text prompt in English or use ready examples\n\n"
         "**2.** Configure generation parameters:\n"
-        "   • Sampling method: **DPM++ 2M SDE**\n"
-        "   • Steps: **20**\n"
-        "   • Width: **720**\n"
-        "   • Height: **980**\n"
-        "   • CFG Scale: **4**\n\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
         "**3.** Generate images **for free**!\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
@@ -291,9 +264,7 @@ EN_TEXTS = {
     "online_training_btn": "Online IKONA training",
     "trial_lesson": "Sign up for Trial Lesson / Training",
     "more_details": "More details / Sign up",
-    "use_buttons": "Please use menu buttons",
-    "training_video": "Training video:",
-    "start_generating": "Start generating!"
+    "use_buttons": "Please use menu buttons"
 }
 
 # Загрузка промтов
@@ -305,40 +276,6 @@ except Exception as e:
     logger.error(f"Ошибка загрузки prompts.json: {str(e)}")
     PROMPTS = []
 
-# --- Утилиты ---
-async def safe_delete_message(chat_id: int, message_id: int, context: ContextTypes.DEFAULT_TYPE):
-    try:
-        await context.bot.delete_message(chat_id, message_id)
-    except Exception as e:
-        logger.warning(f"Не удалось удалить сообщение: {e}")
-
-# Функцию send_with_retry можно адаптировать, если она используется для отправки GIF.
-# В данном случае, так как мы используем InputFile, она не требуется для GIF.
-# Она больше подходит для более сложных механизмов отправки или для универсальной отправки.
-# В рамках предложенных изменений она не используется напрямую.
-async def send_with_retry(chat_id, content, context, retry_count=3):
-    for attempt in range(retry_count):
-        try:
-            if isinstance(content, str):
-                return await context.bot.send_message(chat_id, content)
-            elif isinstance(content, dict): # Предполагаем, что это для send_animation или send_photo
-                if 'animation' in content:
-                    return await context.bot.send_animation(chat_id, **content)
-                # Добавьте другие типы медиа, если необходимо
-            # Это может быть универсальный способ, если InputFile передается в content['animation']
-            elif isinstance(content, InputFile): # Если content уже InputFile
-                return await context.bot.send_animation(chat_id, animation=content)
-
-        except RetryAfter as e:
-            wait_time = e.retry_after + 1
-            logger.warning(f"Rate limited. Waiting {wait_time} sec (attempt {attempt + 1})")
-            await asyncio.sleep(wait_time)
-        except Exception as e:
-            logger.error(f"Ошибка отправки: {e}")
-            await asyncio.sleep(2)
-    return None
-
-# --- Обработчики ---
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка команды /start"""
     try:
@@ -346,33 +283,24 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         logger.info(f"Новый пользователь: {user.id} {user.username}")
         
         # Инициализация состояния пользователя
-        context.user_data.clear()
         context.user_data["prompt_index"] = 0
         
         # Кнопки выбора языка
         keyboard = [
             [
-                InlineKeyboardButton("🇷🇺 Русский", callback_data="lang_ru"),
-                InlineKeyboardButton("🇺🇸 English", callback_data="lang_en")
+                InlineKeyboardButton("🇷🇺 Русский", callback_data="set_lang_ru"),
+                InlineKeyboardButton("🇺🇸 English", callback_data="set_lang_en")
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        # Отправляем только одно сообщение с кнопками
-        await update.message.reply_text(
-            "Please select language / Пожалуйста, выберите язык:",
-            reply_markup=reply_markup
-        )
+        await update.message.reply_text("Please select language / Пожалуйста, выберите язык:", reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в команде /start: {str(e)}")
-        try:
-            await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
-        except Exception as ex:
-            logger.error(f"Не удалось отправить сообщение об ошибке в start: {ex}")
+        await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
 
 async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str) -> None:
-    """Установка языка"""
+    """Установка языка и показ главного меню"""
     try:
         query = update.callback_query
         await query.answer()
@@ -382,44 +310,27 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Удаляем предыдущее сообщение с выбором языка
-        if query.message:
-            try:
-                await query.message.delete()
-            except BadRequest as e:
-                logger.warning(f"Не удалось удалить сообщение (возможно, уже удалено): {e}")
-            except Exception as e:
-                logger.error(f"Ошибка при удалении сообщения в set_language: {e}")
+        # Отправка YouTube видео
+        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
+        await query.message.reply_text(f"{video_text} {videos['free_train']}")
         
-        # Отправляем основное сообщение
-        await query.message.reply_text(
-            f"🎬 {texts.get('training_video', 'Видео обучения:')} {videos['free_train']}\n\n"
-            f"{texts['start']}",
-            parse_mode='Markdown',
-            disable_web_page_preview=True
-        )
+        # Отправка описания
+        await query.message.reply_text(texts["start"], parse_mode='Markdown')
         
-        # Отправка GIF или текстовой ссылки
+        # Отправка GIF
+        gif_path = os.path.join("static", "14.gif")
+        caption_text = "🚀 Начните генерацию! Используйте COLAB:" if lang == "ru" else "🚀 Start generating! Use COLAB:"
         try:
-            if media_cache.start_gif:
+            with open(gif_path, "rb") as gif_file:
                 await query.message.reply_animation(
-                    animation=media_cache.start_gif,
-                    caption=f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
-                    parse_mode='Markdown' # Добавлен parse_mode для caption
+                    animation=InputFile(gif_file),
+                    caption=f"{caption_text} {COLAB_URL}"
                 )
-            else:
-                await query.message.reply_text(
-                    f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
-                    parse_mode='Markdown' # Добавлен parse_mode
-                )
-        except Exception as e:
-            logger.error(f"Ошибка отправки медиа (start_gif): {e}")
-            await query.message.reply_text(
-                f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
-                parse_mode='Markdown' # Добавлен parse_mode
-            )
+        except FileNotFoundError:
+            logger.error(f"Файл {gif_path} не найден")
+            await query.message.reply_text(f"{caption_text} {COLAB_URL}")
         
-        # Кнопки для дальнейших действий
+        # Кнопки при старте
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -430,26 +341,25 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        await query.message.reply_text(
-            texts["choose_action"],
-            reply_markup=reply_markup
-        )
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в set_language: {str(e)}")
-        await error_handler(update, context)
+        if update.callback_query:
+            await update.callback_query.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+        else:
+            await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
 
-async def lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Обработчик выбора русского языка"""
+async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Установка русского языка"""
     await set_language(update, context, "ru")
 
-async def lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Обработчик выбора английского языка"""
+async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Установка английского языка"""
     await set_language(update, context, "en")
 
-async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Показ примера промта"""
+async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показ примера промта с изображением"""
     try:
         query = update.callback_query
         await query.answer()
@@ -461,37 +371,42 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.reply_text(texts["prompt_not_found"])
             return
             
+        # Получение текущего индекса
         current_index = context.user_data.get("prompt_index", 0)
         prompt_data = PROMPTS[current_index]
         
-        # Отправка промта
-        await query.message.reply_text(
-            prompt_data["prompt"],
-            parse_mode='Markdown'
-        )
+        # Отправка изображения
+        image_path = os.path.join("static", prompt_data["image"])
+        try:
+            with open(image_path, "rb") as photo_file:
+                await query.message.reply_photo(
+                    photo=InputFile(photo_file),
+                    caption=prompt_data["prompt"]
+                )
+        except FileNotFoundError:
+            logger.error(f"Файл {image_path} не найден")
+            await query.message.reply_text(prompt_data["prompt"])
         
         # Обновление индекса
-        context.user_data["prompt_index"] = (current_index + 1) % len(PROMPTS)
+        next_index = (current_index + 1) % len(PROMPTS)
+        context.user_data["prompt_index"] = next_index
         
-        # Кнопки
+        # Кнопки для продолжения
         keyboard = [
             [
                 InlineKeyboardButton(texts["more_examples"], callback_data="show_prompt"),
                 InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")
             ]
         ]
-        
-        await query.message.reply_text(
-            texts["what_next"],
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text(texts["what_next"], reply_markup=reply_markup)
         
     except Exception as e:
-        logger.error(f"Ошибка показа промта: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в show_prompt: {str(e)}")
+        await query.message.reply_text("⚠️ Не удалось загрузить пример")
 
-async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Главное меню"""
+async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Показ главного меню"""
     try:
         query = update.callback_query
         await query.answer()
@@ -504,19 +419,14 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton(texts["full_version"], callback_data="pro_version")],
             [InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")]
         ]
-        
-        await query.message.reply_text(
-            texts["main_menu"],
-            reply_markup=InlineKeyboardMarkup(keyboard),
-            parse_mode='Markdown'
-        )
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text(texts["main_menu"], reply_markup=reply_markup, parse_mode='Markdown')
         
     except Exception as e:
-        logger.error(f"Ошибка главного меню: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в main_menu: {str(e)}")
 
-async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Бесплатная версия"""
+async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Повторная отправка стартового сообщения"""
     try:
         query = update.callback_query
         await query.answer()
@@ -525,16 +435,22 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE):
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Комбинированное сообщение
-        await query.message.reply_text(
-            f"🎬 {texts.get('training_video', 'Видео обучения:')} {videos['free_train']}\n\n"
-            f"{texts['start']}\n\n"
-            f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
-            parse_mode='Markdown',
-            disable_web_page_preview=True
-        )
+        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
+        await query.message.reply_text(f"{video_text} {videos['free_train']}")
         
-        # Кнопки
+        await query.message.reply_text(texts["start"], parse_mode='Markdown')
+        
+        gif_path = os.path.join("static", "14.gif")
+        caption_text = "🚀 Начните генерацию! Используйте COLAB:" if lang == "ru" else "🚀 Start generating! Use COLAB:"
+        try:
+            with open(gif_path, "rb") as gif_file:
+                await query.message.reply_animation(
+                    animation=InputFile(gif_file),
+                    caption=f"{caption_text} {COLAB_URL}"
+                )
+        except FileNotFoundError:
+            await query.message.reply_text(f"{caption_text} {COLAB_URL}")
+        
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -544,18 +460,14 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
             ]
         ]
-        
-        await query.message.reply_text(
-            texts["choose_action"],
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
-        logger.error(f"Ошибка free_train: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в free_train: {str(e)}")
 
-async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """PRO версия"""
+async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Информация о PRO версии"""
     try:
         query = update.callback_query
         await query.answer()
@@ -564,74 +476,49 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE):
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Комбинированное сообщение
-        await query.message.reply_text(
-            f"🎬 PRO обучение: {videos['pro_version']}\n\n"
-            f"{texts['pro_features']}",
-            parse_mode='Markdown',
-            disable_web_page_preview=True
-        )
+        # Отправка PRO видео
+        video_text = "🎬 PRO обучение:" if lang == "ru" else "🎬 PRO Training:"
+        await query.message.reply_text(f"{video_text} {videos['pro_version']}")
         
-        # Кнопка для PRO
-        keyboard = [
-            [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)],
-            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
-        ]
-        
-        if media_cache.pro_gif:
-            await query.message.reply_animation(
-                animation=media_cache.pro_gif,
-                caption=texts["pro_caption"],
-                reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode='Markdown' # Добавлен parse_mode для caption
-            )
-        else:
+        # Описание преимуществ PRO
+        await query.message.reply_text(texts["pro_features"], parse_mode='Markdown')
+
+        # Отправка PRO GIF с инлайн-кнопкой
+        pro_gif_path = os.path.join("static", "9d.gif")
+        try:
+            with open(pro_gif_path, "rb") as pro_gif_file:
+                keyboard_pro = [
+                    [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
+                ]
+                reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
+                
+                await query.message.reply_animation(
+                    animation=InputFile(pro_gif_file),
+                    caption=texts["pro_caption"],
+                    reply_markup=reply_markup_pro
+                )
+        except FileNotFoundError:
+            keyboard_pro = [
+                [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
+            ]
+            reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
             await query.message.reply_text(
                 texts["pro_caption"],
-                reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode='Markdown' # Добавлен parse_mode
+                reply_markup=reply_markup_pro
             )
-        
-    except Exception as e:
-        logger.error(f"Ошибка pro_version: {e}")
-        await error_handler(update, context)
 
-async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обучение IKONA"""
-    try:
-        query = update.callback_query
-        await query.answer()
-        
-        lang = context.user_data.get("lang", "ru")
-        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
-        
-        # Комбинированное сообщение
-        await query.message.reply_text(
-            f"🎬 {texts.get('training_video', 'Видео обучения:')} {videos['ikona_training']}\n\n"
-            f"{texts['ikona_training']}",
-            parse_mode='Markdown',
-            disable_web_page_preview=True
-        )
-        
-        # Кнопки выбора обучения
+        # Кнопки для возврата
         keyboard = [
-            [InlineKeyboardButton(texts["offline_training_btn"], callback_data="offline_training")],
-            [InlineKeyboardButton(texts["online_training_btn"], callback_data="online_training")],
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
-        
-        await query.message.reply_text(
-            texts["choose_action"],
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
-        logger.error(f"Ошибка ikona_training: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в pro_version: {str(e)}")
 
-async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Оффлайн обучение"""
+async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Обучение Тату IKONA"""
     try:
         query = update.callback_query
         await query.answer()
@@ -640,31 +527,55 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE):
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Комбинированное сообщение
-        await query.message.reply_text(
-            f"🎬 Оффлайн обучение: {videos['offline_training']}\n\n"
-            f"{texts['offline_training']}",
-            parse_mode='Markdown',
-            disable_web_page_preview=True
-        )
+        # Отправка видео
+        video_text = "🎬 Обучение IKONA:" if lang == "ru" else "🎬 IKONA Training:"
+        await query.message.reply_text(f"{video_text} {videos['ikona_training']}")
+        
+        # Описание обучения
+        await query.message.reply_text(texts["ikona_training"], parse_mode='Markdown')
+        
+        # Кнопки выбора программы
+        keyboard = [
+            [InlineKeyboardButton(texts["offline_training_btn"], callback_data="offline_training")],
+            [InlineKeyboardButton(texts["online_training_btn"], callback_data="online_training")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        menu_text = "Выберите формат обучения:" if lang == "ru" else "Choose training format:"
+        await query.message.reply_text(menu_text, reply_markup=reply_markup)
+        
+    except Exception as e:
+        logger.error(f"Ошибка в ikona_training: {str(e)}")
+
+async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Оффлайн обучение IKONA"""
+    try:
+        query = update.callback_query
+        await query.answer()
+        
+        lang = context.user_data.get("lang", "ru")
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
+        
+        # Отправка видео
+        video_text = "🎬 Оффлайн обучение:" if lang == "ru" else "🎬 Offline training:"
+        await query.message.reply_text(f"{video_text} {videos['offline_training']}")
+        
+        # Описание оффлайн обучения
+        await query.message.reply_text(texts["offline_training"], parse_mode='Markdown')
         
         # Кнопки
         keyboard = [
             [InlineKeyboardButton(texts["trial_lesson"], callback_data="contact_for_trial")],
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
-        
-        await query.message.reply_text(
-            texts["choose_action"],
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
-        logger.error(f"Ошибка offline_training: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в offline_training: {str(e)}")
 
-async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Онлайн обучение"""
+async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Онлайн обучение IKONA"""
     try:
         query = update.callback_query
         await query.answer()
@@ -673,31 +584,26 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE):
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Комбинированное сообщение
-        await query.message.reply_text(
-            f"🎬 Онлайн обучение: {videos['online_training']}\n\n"
-            f"{texts['online_training']}",
-            parse_mode='Markdown',
-            disable_web_page_preview=True
-        )
+        # Отправка видео
+        video_text = "🎬 Онлайн обучение:" if lang == "ru" else "🎬 Online training:"
+        await query.message.reply_text(f"{video_text} {videos['online_training']}")
+        
+        # Описание онлайн обучения
+        await query.message.reply_text(texts["online_training"], parse_mode='Markdown')
         
         # Кнопки
         keyboard = [
             [InlineKeyboardButton(texts["more_details"], callback_data="contact_for_details")],
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
-        
-        await query.message.reply_text(
-            texts["choose_action"],
-            reply_markup=InlineKeyboardMarkup(keyboard)
-        )
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
-        logger.error(f"Ошибка online_training: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в online_training: {str(e)}")
 
-async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Контакт для пробного урока"""
+async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Контакт для записи на пробный урок"""
     try:
         query = update.callback_query
         await query.answer()
@@ -705,16 +611,12 @@ async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE):
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        await query.message.reply_text(
-            texts["contact_for_trial"],
-            parse_mode='Markdown'
-        )
+        await query.message.reply_text(texts["contact_for_trial"], parse_mode='Markdown')
         
     except Exception as e:
-        logger.error(f"Ошибка contact_for_trial: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в contact_for_trial: {str(e)}")
 
-async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Контакт для подробностей"""
     try:
         query = update.callback_query
@@ -723,87 +625,49 @@ async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        await query.message.reply_text(
-            texts["contact_for_details"],
-            parse_mode='Markdown'
-        )
+        await query.message.reply_text(texts["contact_for_details"], parse_mode='Markdown')
         
     except Exception as e:
-        logger.error(f"Ошибка contact_for_details: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в contact_for_details: {str(e)}")
 
-async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка текстовых сообщений"""
     try:
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        
-        await update.message.reply_text(
-            texts["use_buttons"],
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
-            ])
-        )
-        
+        await update.message.reply_text(texts["use_buttons"])
     except Exception as e:
-        logger.error(f"Ошибка handle_text: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в handle_text: {str(e)}")
 
-async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
-    """Глобальный обработчик ошибок"""
-    error = context.error
-    logger.error(msg="Exception occurred:", exc_info=error)
-    
-    if update and isinstance(update, Update):
-        message = update.effective_message
-        if message:
-            try:
-                lang = context.user_data.get("lang", "ru") if hasattr(context, 'user_data') else "ru"
-                text = RU_TEXTS["error"] if lang == "ru" else EN_TEXTS["error"]
-                await message.reply_text(text)
-            except Exception as e:
-                logger.error(f"Не удалось отправить сообщение об ошибке: {e}")
-
-# --- Основная функция ---
-async def main_async(): # Изменено имя для ясности, так как main() вызывает asyncio.run()
+def main() -> None:
     """Запуск бота"""
     try:
-        # Загрузка кэша
-        await media_cache.load()
-        
-        # Создание приложения
-        app = Application.builder().token(TOKEN).build()
+        application = Application.builder().token(TOKEN).build()
         
         # Обработчики команд
-        app.add_handler(CommandHandler("start", start))
+        application.add_handler(CommandHandler("start", start))
         
-        # Обработчики callback
-        app.add_handler(CallbackQueryHandler(lang_ru, pattern="^lang_ru$")) # Изменено с set_lang_ru
-        app.add_handler(CallbackQueryHandler(lang_en, pattern="^lang_en$")) # Изменено с set_lang_en
-        app.add_handler(CallbackQueryHandler(show_prompt, pattern="^show_prompt$"))
-        app.add_handler(CallbackQueryHandler(main_menu, pattern="^main_menu$"))
-        app.add_handler(CallbackQueryHandler(free_train, pattern="^free_train$"))
-        app.add_handler(CallbackQueryHandler(pro_version, pattern="^pro_version$"))
-        app.add_handler(CallbackQueryHandler(ikona_training, pattern="^ikona_training$"))
-        app.add_handler(CallbackQueryHandler(offline_training, pattern="^offline_training$"))
-        app.add_handler(CallbackQueryHandler(online_training, pattern="^online_training$"))
-        app.add_handler(CallbackQueryHandler(contact_for_trial, pattern="^contact_for_trial$"))
-        app.add_handler(CallbackQueryHandler(contact_for_details, pattern="^contact_for_details$"))
+        # Обработчики callback-запросов
+        application.add_handler(CallbackQueryHandler(set_lang_ru, pattern="^set_lang_ru$"))
+        application.add_handler(CallbackQueryHandler(set_lang_en, pattern="^set_lang_en$"))
+        application.add_handler(CallbackQueryHandler(show_prompt, pattern="^show_prompt$"))
+        application.add_handler(CallbackQueryHandler(main_menu, pattern="^main_menu$"))
+        application.add_handler(CallbackQueryHandler(free_train, pattern="^free_train$"))
+        application.add_handler(CallbackQueryHandler(pro_version, pattern="^pro_version$"))
+        application.add_handler(CallbackQueryHandler(ikona_training, pattern="^ikona_training$"))
+        application.add_handler(CallbackQueryHandler(offline_training, pattern="^offline_training$"))
+        application.add_handler(CallbackQueryHandler(online_training, pattern="^online_training$"))
+        application.add_handler(CallbackQueryHandler(contact_for_trial, pattern="^contact_for_trial$"))
+        application.add_handler(CallbackQueryHandler(contact_for_details, pattern="^contact_for_details$"))
         
         # Обработчик текстовых сообщений
-        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
         
-        # Обработчик ошибок
-        app.add_error_handler(error_handler)
-        
-        # Запуск
-        logger.info("Бот запущен в режиме polling...")
-        await app.run_polling()
+        logger.info("Бот запускается...")
+        application.run_polling()
         
     except Exception as e:
-        logger.critical(f"Фатальная ошибка: {e}")
-    finally:
-        logger.info("Бот остановлен")
+        logger.critical(f"Ошибка запуска бота: {str(e)}")
 
 if __name__ == "__main__":
-    asyncio.run(main_async()) # Вызываем асинхронную функцию
+    main()

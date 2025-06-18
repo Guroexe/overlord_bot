@@ -324,11 +324,10 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
         logger.error(f"Файл '{full_file_path}' не найден.")
         # Determine current language for fallback message
         lang = "ru" # Default to Russian
-        if hasattr(message.bot, 'lang') and message.bot.lang in ["ru", "en"]:
-            lang = message.bot.lang
-        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        # Accessing texts based on bot's current language preference
+        texts_for_fallback = RU_TEXTS if message.bot.lang == "ru" else EN_TEXTS
 
-        await message.reply_text(f"{texts['file_not_found']}\n\n{caption}", parse_mode='Markdown') 
+        await message.reply_text(f"{texts_for_fallback['file_not_found']}\n\n{caption}", parse_mode='Markdown') 
         return
 
     try:
@@ -362,6 +361,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data["prompt_index"] = 0
         
         # Set default language for the bot instance in context
+        # This is primarily for fallback messages in send_media_with_file_id
         context.bot.lang = "ru" # Default to Russian until user selects
 
         keyboard = [

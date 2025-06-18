@@ -34,22 +34,22 @@ if not TOKEN:
     logger.error("Токен бота не найден в переменных окружения!")
     raise ValueError("Токен бота не найден")
 
-# Видео для русской версии (теперь с возможностью хранения file_id - для ссылок это неактуально, но для структуры оставлено)
+# Видео для русской версии
 RU_VIDEOS = {
-    "free_train": {"url": "https://youtu.be/mxxbhZ8SxTU"},
-    "pro_version": {"url": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Z_pArWAZaisSKR"},
-    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY"},
-    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc"},
-    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8"}
+    "free_train": "https://youtu.be/mxxbhZ8SxTU",
+    "pro_version": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR",
+    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
+    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
+    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
 }
 
 # Видео для английской версии
 EN_VIDEOS = {
-    "free_train": {"url": "https://youtu.be/RcLS9A24Kss"},
-    "pro_version": {"url": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w"},
-    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY"},
-    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc"},
-    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8"}
+    "free_train": "https://youtu.be/RcLS9A24Kss",
+    "pro_version": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w",
+    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
+    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
+    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
 }
 
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
@@ -60,18 +60,18 @@ RU_TEXTS = {
     "start": (
         "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
         "**Бесплатная версия нейросети** для генерации изображений в стиле:\n"
-        "* Sigilism\n"
-        "* Tribal\n"
-        "* Dark Tattoo\n\n"
+        "• Sigilism\n"
+        "• Tribal\n"
+        "• Dark Tattoo\n\n"
         "Создавайте уникальные арты **без ограничений**!\n\n"
         "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
         "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
         "**2.** Настройте параметры генерации:\n"
-        "   * Sampling method: **DPM++ 2M SDE**\n"
-        "   * Steps: **20**\n"
-        "   * Width: **720**\n"
-        "   * Height: **980**\n"
-        "   * CFG Scale: **4**\n\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
         "**3.** Генерируйте изображения **бесплатно**!\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
@@ -110,9 +110,9 @@ RU_TEXTS = {
         "💰 **Стоимость:** 99 000 рублей\n\n"
         "**БЕСПЛАТНЫЙ ПЕРВЫЙ УРОК!**\n\n"
         "Приходите на пробное занятие, где мы:\n"
-        "* Подробно расскажем о программе\n"
-        "* Дадим набить первую татуировку на искусственной коже\n"
-        "* Вы попробуете себя в роли **Тату-Мастера**!"
+        "• Подробно расскажем о программе\n"
+        "• Дадим набить первую татуировку на искусственной коже\n"
+        "• Вы попробуете себя в роли **Тату-Мастера**!"
     ),
     "online_training": (
         "**ОНЛАЙН ОБУЧЕНИЕ IKONA**\n\n"
@@ -142,7 +142,7 @@ RU_TEXTS = {
     ),
     "prompt_not_found": "⚠️ Примеры промтов временно недоступны",
     "file_not_found": "⚠️ Файл не найден",
-    "error": "⚠️ Если не появились кнопки, нажмите /start",
+    "error": "⚠️ Если не появились кнопки, нажмите /start ",
     "choose_action": "Выберите действие:",
     "what_next": "Что дальше?",
     "main_menu": "**ГЛАВНОЕ МЕНЮ:**",
@@ -153,7 +153,7 @@ RU_TEXTS = {
     "prompt_example": "Пример промта",
     "full_version": "ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +",
     "ikona_training_btn": "Обучение Тату IKONA",
-    "free_train_btn": "OVERLORD AI INK (Free Trial)",
+    "free_train_btn": "OVERLORD AI INK (Free Train)",
     "offline_training_btn": "Оффлайн обучение IKONA в Москве и Питере",
     "online_training_btn": "Онлайн обучение IKONA",
     "trial_lesson": "Записаться на Пробный Урок / Обучение",
@@ -166,18 +166,18 @@ EN_TEXTS = {
     "start": (
         "🖌️ **OVERLORD AI INK (Free Trial)**\n\n"
         "**Free version of neural network** for generating images in styles:\n"
-        "* Sigilism\n"
-        "* Tribal\n"
-        "* Dark Tattoo\n\n"
+        "• Sigilism\n"
+        "• Tribal\n"
+        "• Dark Tattoo\n\n"
         "Create unique artworks **without limitations**!\n\n"
         "**HOW TO USE:**\n\n"
         "**1.** Enter text prompt in English or use ready examples\n\n"
         "**2.** Configure generation parameters:\n"
-        "   * Sampling method: **DPM++ 2M SDE**\n"
-        "   * Steps: **20**\n"
-        "   * Width: **720**\n"
-        "   * Height: **980**\n"
-        "   * CFG Scale: **4**\n\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
         "**3.** Generate images **for free**!\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
@@ -216,9 +216,9 @@ EN_TEXTS = {
         "💰 **Price:** 99,000 rubles\n\n"
         "**FREE FIRST LESSON!**\n\n"
         "Come to a trial lesson where we will:\n"
-        "* Tell you in detail about the program\n"
-        "* Let you make your first tattoo on artificial skin\n"
-        "* You will try yourself as a **Tattoo Master**!"
+        "• Tell you in detail about the program\n"
+        "• Let you make your first tattoo on artificial skin\n"
+        "• You will try yourself as a **Tattoo Master**!"
     ),
     "online_training": (
         "**ONLINE IKONA TRAINING**\n\n"
@@ -274,84 +274,7 @@ try:
     logger.info(f"Успешно загружено {len(PROMPTS)} промтов")
 except Exception as e:
     logger.error(f"Ошибка загрузки prompts.json: {str(e)}")
-    PROMPTS =
-
-# Глобальное хранилище для file_id GIF-файлов, чтобы не загружать их повторно
-# Эти ID будут сбрасываться при перезапуске бота, для постоянного хранения нужна база данных/файл
-GIF_FILE_IDS = {
-    "14.gif": None,
-    "9d.gif": None,
-}
-
-# Вспомогательное хранилище для file_id изображений промтов
-# Эти ID будут сбрасываться при перезапуске бота, для постоянного хранения нужна база данных/файл
-PROMPT_IMAGE_FILE_IDS = {}
-
-
-async def send_media_with_file_id(message, media_type: str, file_name: str, caption: str = None, reply_markup=None) -> None:
-    """
-    Отправляет медиафайл (GIF или Photo), используя file_id, если он доступен,
-    иначе отправляет файл с диска и сохраняет file_id.
-    """
-    # Определяем, где искать/хранить file_id
-    file_id_store = None
-    if media_type == "animation":
-        file_id_store = GIF_FILE_IDS
-    elif media_type == "photo":
-        file_id_store = PROMPT_IMAGE_FILE_IDS
-    else:
-        logger.error(f"Неизвестный тип медиа для send_media_with_file_id: {media_type}")
-        await message.reply_text(f"⚠️ Внутренняя ошибка бота при обработке медиа. Пожалуйста, попробуйте позже.", parse_mode='Markdown')
-        return
-
-    current_file_id = file_id_store.get(file_name)
-    full_file_path = os.path.join("static", file_name)
-    
-    # Попытка отправить по file_id
-    if current_file_id:
-        try:
-            if media_type == "animation":
-                await message.reply_animation(animation=current_file_id, caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
-            elif media_type == "photo":
-                await message.reply_photo(photo=current_file_id, caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
-            logger.info(f"Медиафайл '{file_name}' отправлен по file_id: {current_file_id}")
-            return
-        except Exception as e:
-            logger.warning(f"Ошибка при отправке медиа '{file_name}' по file_id ({current_file_id}): {e}. Попытка отправить с диска.")
-            file_id_store[file_name] = None # Сбрасываем file_id, если он недействителен
-
-
-    # Если file_id не найден или недействителен, отправляем с диска
-    if not os.path.exists(full_file_path):
-        logger.error(f"Файл '{full_file_path}' не найден.")
-        # Fallback: send text if file not found
-        await message.reply_text(f"{texts['file_not_found']}\n\n{caption}", parse_mode='Markdown')
-        return
-
-    try:
-        with open(full_file_path, "rb") as file_to_send:
-            sent_message = None
-            if media_type == "animation":
-                sent_message = await message.reply_animation(animation=InputFile(file_to_send), caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
-                new_file_id = sent_message.animation.file_id
-            elif media_type == "photo":
-                sent_message = await message.reply_photo(photo=InputFile(file_to_send), caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
-                # Telegram возвращает список размеров фото, берем последний (самый большой)
-                new_file_id = sent_message.photo[-1].file_id 
-            
-            if new_file_id:
-                file_id_store[file_name] = new_file_id
-            logger.info(f"Медиафайл '{file_name}' отправлен с диска и сохранен file_id: {new_file_id}")
-            else:
-                logger.error(f"Не удалось получить file_id для '{file_name}' после отправки.")
-                # Fallback: send text if file_id not obtained
-                await message.reply_text(f"⚠️ Ошибка при отправке медиа. Промт: {caption}", parse_mode='Markdown')
-
-    except Exception as e:
-        logger.error(f"Ошибка при отправке медиафайла '{full_file_path}': {e}")
-        # Fallback: send text if general error during send
-        await message.reply_text(f"⚠️ Ошибка при отправке медиа.\n\n{caption if caption else ''}", parse_mode='Markdown')
-
+    PROMPTS = []
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка команды /start"""
@@ -363,14 +286,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         context.user_data["prompt_index"] = 0
         
         # Кнопки выбора языка
-        keyboard =
+        keyboard = [
+            [
+                InlineKeyboardButton("🇷🇺 Русский", callback_data="set_lang_ru"),
+                InlineKeyboardButton("🇺🇸 English", callback_data="set_lang_en")
+            ]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await update.message.reply_text("Please select language / Пожалуйста, выберите язык:", reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в команде /start: {str(e)}")
         await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
-
 
 async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str) -> None:
     """Установка языка и показ главного меню"""
@@ -383,34 +310,48 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # 1. Отправка YouTube видео
+        # Отправка YouTube видео
         video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
-        await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
+        await query.message.reply_text(f"{video_text} {videos['free_train']}")
         
-        # 2. Объединенный текст и ссылка COLAB в подписи GIF
-        gif_path = "14.gif"
-        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
-
-        await send_media_with_file_id(
-            query.message,
-            "animation",
-            gif_path,
-            caption=caption_text
+        # Комбинированный текст для GIF-сообщения
+        full_caption_text = (
+            f"{texts['start']}\n\n"
+            f"🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
         )
+
+        # Отправка GIF с объединенным текстом в качестве подписи
+        gif_path = os.path.join("static", "14.gif")
+        try:
+            with open(gif_path, "rb") as gif_file:
+                await query.message.reply_animation(
+                    animation=InputFile(gif_file),
+                    caption=full_caption_text,
+                    parse_mode='Markdown'
+                )
+        except FileNotFoundError:
+            logger.error(f"Файл {gif_path} не найден")
+            await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback to text only if GIF not found
         
-        # 3. Кнопки основного меню
-        keyboard =, callback_data="show_prompt"),
+        # Кнопки при старте
+        keyboard = [
+            [
+                InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
                 InlineKeyboardButton(texts["full_version"], callback_data="pro_version")
             ],
-           , callback_data="ikona_training")
+            [
+                InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
             ]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в set_language: {str(e)}")
-        await query.message.reply_text("⚠️ Произошла ошибка при загрузке. Пожалуйста, попробуйте еще раз, нажав /start.")
-
+        if update.callback_query:
+            await update.callback_query.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+        else:
+            await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
 
 async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Установка русского языка"""
@@ -419,7 +360,6 @@ async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Установка английского языка"""
     await set_language(update, context, "en")
-
 
 async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ примера промта с изображением"""
@@ -438,29 +378,35 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         current_index = context.user_data.get("prompt_index", 0)
         prompt_data = PROMPTS[current_index]
         
+        # Отправка изображения
+        image_path = os.path.join("static", prompt_data["image"])
+        try:
+            with open(image_path, "rb") as photo_file:
+                await query.message.reply_photo(
+                    photo=InputFile(photo_file),
+                    caption=prompt_data["prompt"]
+                )
+        except FileNotFoundError:
+            logger.error(f"Файл {image_path} не найден")
+            await query.message.reply_text(prompt_data["prompt"])
+        
         # Обновление индекса
         next_index = (current_index + 1) % len(PROMPTS)
         context.user_data["prompt_index"] = next_index
-
+        
         # Кнопки для продолжения
-        keyboard =, callback_data="show_prompt"),
+        keyboard = [
+            [
+                InlineKeyboardButton(texts["more_examples"], callback_data="show_prompt"),
                 InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")
             ]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        # Отправляем фото с прикрепленными кнопками
-        await send_media_with_file_id(
-            query.message,
-            "photo",
-            prompt_data["image"], # Имя файла, например "1.png"
-            caption=prompt_data["prompt"],
-            reply_markup=reply_markup # <--- Ключевое изменение: передаем reply_markup напрямую
-        )
+        await query.message.reply_text(texts["what_next"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в show_prompt: {str(e)}")
-        await query.message.reply_text(texts["error"]) # Generic error for show_prompt
-
+        await query.message.reply_text("⚠️ Не удалось загрузить пример")
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ главного меню"""
@@ -471,15 +417,16 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        keyboard =, callback_data="free_train")],
-           , callback_data="pro_version")],
-           , callback_data="ikona_training")]
+        keyboard = [
+            [InlineKeyboardButton(texts["free_train_btn"], callback_data="free_train")],
+            [InlineKeyboardButton(texts["full_version"], callback_data="pro_version")],
+            [InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["main_menu"], reply_markup=reply_markup, parse_mode='Markdown')
         
     except Exception as e:
         logger.error(f"Ошибка в main_menu: {str(e)}")
-
 
 async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Повторная отправка стартового сообщения"""
@@ -491,33 +438,40 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # 1. Отправка YouTube видео
         video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
-        await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
+        await query.message.reply_text(f"{video_text} {videos['free_train']}")
         
-        # 2. Объединенный текст и ссылка COLAB в подписи GIF
-        gif_path = "14.gif"
-        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
-
-        await send_media_with_file_id(
-            query.message,
-            "animation",
-            gif_path,
-            caption=caption_text
+        # Комбинированный текст для GIF-сообщения
+        full_caption_text = (
+            f"{texts['start']}\n\n"
+            f"🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
         )
         
-        # 3. Кнопки основного меню
-        keyboard =, callback_data="show_prompt"),
+        gif_path = os.path.join("static", "14.gif")
+        try:
+            with open(gif_path, "rb") as gif_file:
+                await query.message.reply_animation(
+                    animation=InputFile(gif_file),
+                    caption=full_caption_text,
+                    parse_mode='Markdown'
+                )
+        except FileNotFoundError:
+            await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback to text only if GIF not found
+        
+        keyboard = [
+            [
+                InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
                 InlineKeyboardButton(texts["full_version"], callback_data="pro_version")
             ],
-           , callback_data="ikona_training")
+            [
+                InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
             ]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в free_train: {str(e)}")
-
 
 async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Информация о PRO версии"""
@@ -529,34 +483,51 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # 1. Отправка PRO видео
+        # Отправка PRO видео
         video_text = "🎬 PRO обучение:" if lang == "ru" else "🎬 PRO Training:"
-        await query.message.reply_text(f"{video_text} {videos['pro_version']['url']}")
+        await query.message.reply_text(f"{video_text} {videos['pro_version']}")
         
-        # 2. Объединенный текст PRO и кнопка в подписи PRO GIF
-        pro_gif_path = "9d.gif"
-        # Concatenate pro_features and pro_caption with two newlines for better spacing
-        caption_text = f"{texts['pro_features']}\n\n{texts['pro_caption']}" 
-        
-        keyboard_pro =, url=TRIBUT_URL)]
-        reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
-        
-        await send_media_with_file_id(
-            query.message,
-            "animation",
-            pro_gif_path,
-            caption=caption_text,
-            reply_markup=reply_markup_pro
+        # Комбинированный текст для GIF-сообщения
+        pro_caption_text = (
+            f"{texts['pro_features']}\n\n"
+            f"{texts['pro_caption']}"
         )
 
-        # 3. Кнопки для возврата
-        keyboard =, callback_data="main_menu")]
+        # Отправка PRO GIF с инлайн-кнопкой
+        pro_gif_path = os.path.join("static", "9d.gif")
+        try:
+            with open(pro_gif_path, "rb") as pro_gif_file:
+                keyboard_pro = [
+                    [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
+                ]
+                reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
+                
+                await query.message.reply_animation(
+                    animation=InputFile(pro_gif_file),
+                    caption=pro_caption_text, # Use the combined text as caption
+                    parse_mode='Markdown',
+                    reply_markup=reply_markup_pro
+                )
+        except FileNotFoundError:
+            keyboard_pro = [
+                [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
+            ]
+            reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
+            await query.message.reply_text(
+                pro_caption_text, # Use the combined text
+                parse_mode='Markdown',
+                reply_markup=reply_markup_pro
+            )
+
+        # Кнопки для возврата
+        keyboard = [
+            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в pro_version: {str(e)}")
-
 
 async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обучение Тату IKONA"""
@@ -570,21 +541,22 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         
         # Отправка видео
         video_text = "🎬 Обучение IKONA:" if lang == "ru" else "🎬 IKONA Training:"
-        await query.message.reply_text(f"{video_text} {videos['ikona_training']['url']}")
+        await query.message.reply_text(f"{video_text} {videos['ikona_training']}")
         
         # Описание обучения
         await query.message.reply_text(texts["ikona_training"], parse_mode='Markdown')
         
         # Кнопки выбора программы
-        keyboard =, callback_data="offline_training")],
-           , callback_data="online_training")]
+        keyboard = [
+            [InlineKeyboardButton(texts["offline_training_btn"], callback_data="offline_training")],
+            [InlineKeyboardButton(texts["online_training_btn"], callback_data="online_training")]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         menu_text = "Выберите формат обучения:" if lang == "ru" else "Choose training format:"
         await query.message.reply_text(menu_text, reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в ikona_training: {str(e)}")
-
 
 async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Оффлайн обучение IKONA"""
@@ -598,20 +570,21 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         
         # Отправка видео
         video_text = "🎬 Оффлайн обучение:" if lang == "ru" else "🎬 Offline training:"
-        await query.message.reply_text(f"{video_text} {videos['offline_training']['url']}")
+        await query.message.reply_text(f"{video_text} {videos['offline_training']}")
         
         # Описание оффлайн обучения
         await query.message.reply_text(texts["offline_training"], parse_mode='Markdown')
         
         # Кнопки
-        keyboard =, callback_data="contact_for_trial")],
-           , callback_data="main_menu")]
+        keyboard = [
+            [InlineKeyboardButton(texts["trial_lesson"], callback_data="contact_for_trial")],
+            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в offline_training: {str(e)}")
-
 
 async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Онлайн обучение IKONA"""
@@ -625,20 +598,21 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         
         # Отправка видео
         video_text = "🎬 Онлайн обучение:" if lang == "ru" else "🎬 Online training:"
-        await query.message.reply_text(f"{video_text} {videos['online_training']['url']}")
+        await query.message.reply_text(f"{video_text} {videos['online_training']}")
         
         # Описание онлайн обучения
         await query.message.reply_text(texts["online_training"], parse_mode='Markdown')
         
         # Кнопки
-        keyboard =, callback_data="contact_for_details")],
-           , callback_data="main_menu")]
+        keyboard = [
+            [InlineKeyboardButton(texts["more_details"], callback_data="contact_for_details")],
+            [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
+        ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         await query.message.reply_text(texts["choose_action"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в online_training: {str(e)}")
-
 
 async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Контакт для записи на пробный урок"""
@@ -654,7 +628,6 @@ async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     except Exception as e:
         logger.error(f"Ошибка в contact_for_trial: {str(e)}")
 
-
 async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Контакт для подробностей"""
     try:
@@ -669,7 +642,6 @@ async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE
     except Exception as e:
         logger.error(f"Ошибка в contact_for_details: {str(e)}")
 
-
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка текстовых сообщений"""
     try:
@@ -678,7 +650,6 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text(texts["use_buttons"])
     except Exception as e:
         logger.error(f"Ошибка в handle_text: {str(e)}")
-
 
 def main() -> None:
     """Запуск бота"""
@@ -709,7 +680,6 @@ def main() -> None:
         
     except Exception as e:
         logger.critical(f"Ошибка запуска бота: {str(e)}")
-
 
 if __name__ == "__main__":
     main()

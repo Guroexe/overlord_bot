@@ -284,6 +284,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         
         # Инициализация состояния пользователя
         context.user_data["prompt_index"] = 0
+        # Инициализация кэша file_id для текущего пользователя
+        if "file_id_cache" not in context.user_data:
+            context.user_data["file_id_cache"] = {}
         
         # Кнопки выбора языка
         keyboard = [
@@ -322,16 +325,34 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
 
         # Отправка GIF с объединенным текстом в качестве подписи
         gif_path = os.path.join("static", "14.gif")
-        try:
-            with open(gif_path, "rb") as gif_file:
-                await query.message.reply_animation(
-                    animation=InputFile(gif_file),
-                    caption=full_caption_text,
-                    parse_mode='Markdown'
-                )
-        except FileNotFoundError:
-            logger.error(f"Файл {gif_path} не найден")
-            await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback to text only if GIF not found
+        cached_file_id = context.user_data["file_id_cache"].get(gif_path)
+
+        if cached_file_id:
+            logger.info(f"Отправка GIF из кэша: {gif_path}")
+            message = await query.message.reply_animation(
+                animation=cached_file_id,
+                caption=full_caption_text,
+                parse_mode='Markdown'
+            )
+        else:
+            try:
+                logger.info(f"Отправка GIF с диска: {gif_path}")
+                with open(gif_path, "rb") as gif_file:
+                    message = await query.message.reply_animation(
+                        animation=InputFile(gif_file),
+                        caption=full_caption_text,
+                        parse_mode='Markdown'
+                    )
+                # Сохраняем file_id в кэш
+                if message.animation and message.animation.file_id:
+                    context.user_data["file_id_cache"][gif_path] = message.animation.file_id
+                    logger.info(f"Сохранен file_id для {gif_path}: {message.animation.file_id}")
+            except FileNotFoundError:
+                logger.error(f"Файл {gif_path} не найден")
+                await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback to text only if GIF not found
+            except Exception as e:
+                logger.error(f"Ошибка при отправке GIF {gif_path}: {str(e)}")
+                await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback on error
         
         # Кнопки при старте
         keyboard = [
@@ -380,15 +401,32 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         
         # Отправка изображения
         image_path = os.path.join("static", prompt_data["image"])
-        try:
-            with open(image_path, "rb") as photo_file:
-                await query.message.reply_photo(
-                    photo=InputFile(photo_file),
-                    caption=prompt_data["prompt"]
-                )
-        except FileNotFoundError:
-            logger.error(f"Файл {image_path} не найден")
-            await query.message.reply_text(prompt_data["prompt"])
+        cached_file_id = context.user_data["file_id_cache"].get(image_path)
+
+        if cached_file_id:
+            logger.info(f"Отправка фото из кэша: {image_path}")
+            message = await query.message.reply_photo(
+                photo=cached_file_id,
+                caption=prompt_data["prompt"]
+            )
+        else:
+            try:
+                logger.info(f"Отправка фото с диска: {image_path}")
+                with open(image_path, "rb") as photo_file:
+                    message = await query.message.reply_photo(
+                        photo=InputFile(photo_file),
+                        caption=prompt_data["prompt"]
+                    )
+                # Сохраняем file_id в кэш
+                if message.photo and message.photo[-1].file_id: # Telegram returns multiple sizes, pick the largest
+                    context.user_data["file_id_cache"][image_path] = message.photo[-1].file_id
+                    logger.info(f"Сохранен file_id для {image_path}: {message.photo[-1].file_id}")
+            except FileNotFoundError:
+                logger.error(f"Файл {image_path} не найден")
+                await query.message.reply_text(prompt_data["prompt"])
+            except Exception as e:
+                logger.error(f"Ошибка при отправке фото {image_path}: {str(e)}")
+                await query.message.reply_text(prompt_data["prompt"])
         
         # Обновление индекса
         next_index = (current_index + 1) % len(PROMPTS)
@@ -448,15 +486,34 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         )
         
         gif_path = os.path.join("static", "14.gif")
-        try:
-            with open(gif_path, "rb") as gif_file:
-                await query.message.reply_animation(
-                    animation=InputFile(gif_file),
-                    caption=full_caption_text,
-                    parse_mode='Markdown'
-                )
-        except FileNotFoundError:
-            await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback to text only if GIF not found
+        cached_file_id = context.user_data["file_id_cache"].get(gif_path)
+
+        if cached_file_id:
+            logger.info(f"Отправка GIF из кэша: {gif_path}")
+            message = await query.message.reply_animation(
+                animation=cached_file_id,
+                caption=full_caption_text,
+                parse_mode='Markdown'
+            )
+        else:
+            try:
+                logger.info(f"Отправка GIF с диска: {gif_path}")
+                with open(gif_path, "rb") as gif_file:
+                    message = await query.message.reply_animation(
+                        animation=InputFile(gif_file),
+                        caption=full_caption_text,
+                        parse_mode='Markdown'
+                    )
+                # Сохраняем file_id в кэш
+                if message.animation and message.animation.file_id:
+                    context.user_data["file_id_cache"][gif_path] = message.animation.file_id
+                    logger.info(f"Сохранен file_id для {gif_path}: {message.animation.file_id}")
+            except FileNotFoundError:
+                logger.error(f"Файл {gif_path} не найден")
+                await query.message.reply_text(full_caption_text, parse_mode='Markdown')
+            except Exception as e:
+                logger.error(f"Ошибка при отправке GIF {gif_path}: {str(e)}")
+                await query.message.reply_text(full_caption_text, parse_mode='Markdown')
         
         keyboard = [
             [
@@ -495,29 +552,49 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
         # Отправка PRO GIF с инлайн-кнопкой
         pro_gif_path = os.path.join("static", "9d.gif")
-        try:
-            with open(pro_gif_path, "rb") as pro_gif_file:
-                keyboard_pro = [
-                    [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
-                ]
-                reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
-                
-                await query.message.reply_animation(
-                    animation=InputFile(pro_gif_file),
-                    caption=pro_caption_text, # Use the combined text as caption
-                    parse_mode='Markdown',
-                    reply_markup=reply_markup_pro
-                )
-        except FileNotFoundError:
-            keyboard_pro = [
-                [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
-            ]
-            reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
-            await query.message.reply_text(
-                pro_caption_text, # Use the combined text
+        cached_file_id = context.user_data["file_id_cache"].get(pro_gif_path)
+
+        keyboard_pro = [
+            [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
+        ]
+        reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
+
+        if cached_file_id:
+            logger.info(f"Отправка PRO GIF из кэша: {pro_gif_path}")
+            message = await query.message.reply_animation(
+                animation=cached_file_id,
+                caption=pro_caption_text,
                 parse_mode='Markdown',
                 reply_markup=reply_markup_pro
             )
+        else:
+            try:
+                logger.info(f"Отправка PRO GIF с диска: {pro_gif_path}")
+                with open(pro_gif_path, "rb") as pro_gif_file:
+                    message = await query.message.reply_animation(
+                        animation=InputFile(pro_gif_file),
+                        caption=pro_caption_text,
+                        parse_mode='Markdown',
+                        reply_markup=reply_markup_pro
+                    )
+                # Сохраняем file_id в кэш
+                if message.animation and message.animation.file_id:
+                    context.user_data["file_id_cache"][pro_gif_path] = message.animation.file_id
+                    logger.info(f"Сохранен file_id для {pro_gif_path}: {message.animation.file_id}")
+            except FileNotFoundError:
+                logger.error(f"Файл {pro_gif_path} не найден")
+                await query.message.reply_text(
+                    pro_caption_text,
+                    parse_mode='Markdown',
+                    reply_markup=reply_markup_pro
+                )
+            except Exception as e:
+                logger.error(f"Ошибка при отправке PRO GIF {pro_gif_path}: {str(e)}")
+                await query.message.reply_text(
+                    pro_caption_text,
+                    parse_mode='Markdown',
+                    reply_markup=reply_markup_pro
+                )
 
         # Кнопки для возврата
         keyboard = [

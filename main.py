@@ -56,15 +56,13 @@ EN_VIDEOS = {
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
 TRIBUT_URL = "https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32"
 
-# ... (RU_TEXTS и EN_TEXTS остаются без изменений) ...
-
 # Тексты для русской версии
 RU_TEXTS = {
     "start": (
         "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
         "**Бесплатная версия нейросети** для генерации изображений в стиле:\n"
         "• Sigilism\n"
-        "• Tribal\n"
+        "• Tribal\
         "• Dark Tattoo\n\n"
         "Создавайте уникальные арты **без ограничений**!\n\n"
         "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
@@ -278,41 +276,56 @@ except Exception as e:
     logger.error(f"Ошибка загрузки prompts.json: {str(e)}")
     PROMPTS = []
 
+# Добавляем file_id для гифок
+# Это будет храниться в памяти бота и позволит избежать повторной загрузки
+GIF_FILE_IDS = {
+    "14.gif": None,
+    "9d.gif": None,
+}
 
-async def send_media_with_file_id(message, media_type: str, media_data: dict, caption: str = None, reply_markup=None) -> None:
+async def send_media_with_file_id(message, media_type: str, file_path: str, caption: str = None, reply_markup=None) -> str:
     """
-    Отправляет медиафайл, используя file_id, если он доступен,
+    Отправляет медиафайл, используя file_id из глобального словаря GIF_FILE_IDS, если он доступен,
     иначе отправляет файл с диска и сохраняет file_id.
+    Возвращает file_id отправленного файла или None в случае ошибки.
     """
-    if media_data.get("file_id"):
+    file_name = os.path.basename(file_path)
+    current_file_id = GIF_FILE_IDS.get(file_name)
+
+    if current_file_id:
         try:
             if media_type == "animation":
-                await message.reply_animation(animation=media_data["file_id"], caption=caption, reply_markup=reply_markup)
+                sent_message = await message.reply_animation(animation=current_file_id, caption=caption, reply_markup=reply_markup)
             elif media_type == "photo":
-                await message.reply_photo(photo=media_data["file_id"], caption=caption, reply_markup=reply_markup)
-            return
+                sent_message = await message.reply_photo(photo=current_file_id, caption=caption, reply_markup=reply_markup)
+            logger.info(f"Медиафайл {file_name} отправлен по file_id: {current_file_id}")
+            return current_file_id
         except Exception as e:
-            logger.warning(f"Ошибка при отправке медиа по file_id ({media_data['file_id']}): {e}. Попытка отправить с диска.")
-            media_data["file_id"] = None # Сбрасываем file_id, если он недействителен
+            logger.warning(f"Ошибка при отправке медиа {file_name} по file_id ({current_file_id}): {e}. Попытка отправить с диска.")
+            GIF_FILE_IDS[file_name] = None # Сбрасываем file_id, если он недействителен
 
-    file_path = os.path.join("static", media_data.get("path"))
-    if not os.path.exists(file_path):
-        logger.error(f"Файл {file_path} не найден.")
+    full_file_path = os.path.join("static", file_path)
+    if not os.path.exists(full_file_path):
+        logger.error(f"Файл {full_file_path} не найден.")
         await message.reply_text(f"⚠️ Файл не найден: {caption}" if caption else "⚠️ Файл не найден.")
-        return
+        return None
 
     try:
-        with open(file_path, "rb") as file_to_send:
+        with open(full_file_path, "rb") as file_to_send:
             if media_type == "animation":
                 sent_message = await message.reply_animation(animation=InputFile(file_to_send), caption=caption, reply_markup=reply_markup)
-                media_data["file_id"] = sent_message.animation.file_id
+                new_file_id = sent_message.animation.file_id
             elif media_type == "photo":
                 sent_message = await message.reply_photo(photo=InputFile(file_to_send), caption=caption, reply_markup=reply_markup)
-                media_data["file_id"] = sent_message.photo[-1].file_id # Берем наибольшую версию фото
-            logger.info(f"Медиафайл отправлен с диска и сохранен file_id: {media_data['file_id']}")
+                new_file_id = sent_message.photo[-1].file_id # Берем наибольшую версию фото
+            
+            GIF_FILE_IDS[file_name] = new_file_id
+            logger.info(f"Медиафайл {file_name} отправлен с диска и сохранен file_id: {new_file_id}")
+            return new_file_id
     except Exception as e:
-        logger.error(f"Ошибка при отправке медиафайла {file_path}: {e}")
+        logger.error(f"Ошибка при отправке медиафайла {full_file_path}: {e}")
         await message.reply_text(f"⚠️ Ошибка при отправке медиа. {caption}" if caption else "⚠️ Ошибка при отправке медиа.")
+        return None
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -338,7 +351,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         logger.error(f"Ошибка в команде /start: {str(e)}")
         await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
 
-
 async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str) -> None:
     """Установка языка и показ главного меню"""
     try:
@@ -350,28 +362,24 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Отправка YouTube видео
+        # Отправка YouTube видео (отдельно)
         video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
         await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
         
-        # Отправка описания
-        await query.message.reply_text(texts["start"], parse_mode='Markdown')
-        
-        # Отправка GIF
-        # Используем обновленную функцию send_media_with_file_id
-        gif_data = {"path": "14.gif", "file_id": context.bot_data.get("gif_14_file_id")}
-        caption_text = "🚀 Начните генерацию! Используйте COLAB:" if lang == "ru" else "🚀 Start generating! Use COLAB:"
+        # Объединяем вступительный текст и Colab URL в одну подпись для GIF
+        gif_path = "14.gif"
+        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
 
-        sent_message = await context.bot.send_animation(
-            chat_id=query.message.chat_id,
-            animation=InputFile(os.path.join("static", gif_data["path"])),
-            caption=f"{caption_text} {COLAB_URL}"
+        # Отправка GIF с объединенным текстом
+        await send_media_with_file_id(
+            query.message,
+            "animation",
+            gif_path,
+            caption=caption_text,
+            # No reply_markup here, will send main menu buttons separately
         )
-        # Сохраняем file_id в bot_data для использования в будущем
-        context.bot_data["gif_14_file_id"] = sent_message.animation.file_id
-        logger.info(f"Сохранен file_id для gif_14: {context.bot_data['gif_14_file_id']}")
-
-        # Кнопки при старте
+        
+        # Кнопки при старте - отправляем отдельным сообщением после GIF
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -386,10 +394,9 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         
     except Exception as e:
         logger.error(f"Ошибка в set_language: {str(e)}")
-        if update.callback_query:
-            await update.callback_query.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
-        else:
-            await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+        # Отправляем сообщение об ошибке только один раз
+        await query.message.reply_text("⚠️ Произошла ошибка при загрузке. Пожалуйста, попробуйте еще раз, нажав /start.")
+
 
 async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Установка русского языка"""
@@ -414,24 +421,15 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             
         # Получение текущего индекса
         current_index = context.user_data.get("prompt_index", 0)
-        prompt_data = PROMPTS[current_index] # prompt_data уже содержит "image" и "prompt"
+        prompt_data = PROMPTS[current_index]
         
-        # Обновляем структуру PROMPTS, чтобы хранить file_id
-        if "file_id" not in prompt_data:
-            prompt_data["file_id"] = None
-
         # Отправляем фото
         await send_media_with_file_id(
             query.message,
             "photo",
-            {"path": prompt_data["image"], "file_id": prompt_data["file_id"]},
-            prompt_data["prompt"]
+            prompt_data["image"], # Имя файла, например "image1.jpg"
+            caption=prompt_data["prompt"]
         )
-        # После успешной отправки и сохранения file_id, обновим prompt_data в PROMPTS
-        # Если вы хотите, чтобы file_id сохранялся между перезапусками, вам нужно
-        # сохранять PROMPTS в файл (например, после каждого добавления file_id).
-        # Для этой демонстрации, file_id будет сохраняться только в течение жизни бота.
-        PROMPTS[current_index]["file_id"] = prompt_data["file_id"] # Обновляем глобальный PROMPTS
         
         # Обновление индекса
         next_index = (current_index + 1) % len(PROMPTS)
@@ -481,23 +479,24 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
+        # Отправка YouTube видео (отдельно)
         video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
         await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
         
-        await query.message.reply_text(texts["start"], parse_mode='Markdown')
-        
-        # Отправка GIF
-        # Используем обновленную функцию send_media_with_file_id
-        gif_data = {"path": "14.gif", "file_id": context.bot_data.get("gif_14_file_id")}
-        caption_text = "🚀 Начните генерацию! Используйте COLAB:" if lang == "ru" else "🚀 Start generating! Use COLAB:"
+        # Объединяем вступительный текст и Colab URL в одну подпись для GIF
+        gif_path = "14.gif"
+        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
 
-        sent_message = await context.bot.send_animation(
-            chat_id=query.message.chat_id,
-            animation=InputFile(os.path.join("static", gif_data["path"])),
-            caption=f"{caption_text} {COLAB_URL}"
+        # Отправка GIF с объединенным текстом
+        await send_media_with_file_id(
+            query.message,
+            "animation",
+            gif_path,
+            caption=caption_text,
+            # No reply_markup here, will send main menu buttons separately
         )
-        context.bot_data["gif_14_file_id"] = sent_message.animation.file_id
         
+        # Кнопки - отправляем отдельным сообщением после GIF
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -527,26 +526,24 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         video_text = "🎬 PRO обучение:" if lang == "ru" else "🎬 PRO Training:"
         await query.message.reply_text(f"{video_text} {videos['pro_version']['url']}")
         
-        # Описание преимуществ PRO
-        await query.message.reply_text(texts["pro_features"], parse_mode='Markdown')
-
-        # Отправка PRO GIF с инлайн-кнопкой
-        pro_gif_data = {"path": "9d.gif", "file_id": context.bot_data.get("gif_9d_file_id")}
+        # Описание преимуществ PRO в подписи GIF
+        pro_gif_path = "9d.gif"
+        
+        # Кнопки для PRO версии встроены в GIF
         keyboard_pro = [
             [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
         ]
         reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
-
-        sent_message = await context.bot.send_animation(
-            chat_id=query.message.chat_id,
-            animation=InputFile(os.path.join("static", pro_gif_data["path"])),
-            caption=texts["pro_caption"],
+        
+        await send_media_with_file_id(
+            query.message,
+            "animation",
+            pro_gif_path,
+            caption=f"{texts['pro_features']}\n\n{texts['pro_caption']}", # Объединяем текст
             reply_markup=reply_markup_pro
         )
-        context.bot_data["gif_9d_file_id"] = sent_message.animation.file_id
-        logger.info(f"Сохранен file_id для gif_9d: {context.bot_data['gif_9d_file_id']}")
-        
-        # Кнопки для возврата
+
+        # Кнопки для возврата - отправляем отдельным сообщением
         keyboard = [
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
@@ -678,7 +675,6 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text(texts["use_buttons"])
     except Exception as e:
         logger.error(f"Ошибка в handle_text: {str(e)}")
-
 
 def main() -> None:
     """Запуск бота"""

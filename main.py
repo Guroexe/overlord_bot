@@ -45,11 +45,16 @@ class MediaCache:
     
     async def load(self):
         try:
+            # Для InputMediaAnimation файлы должны быть открыты в бинарном режиме
+            # и переданы как bytes. Рекомендуется использовать InputFile для отправки файлов.
+            # Если вы хотите кэшировать сами байты, то так:
             with open(os.path.join("static", "14.gif"), "rb") as f:
-                self.start_gif = InputMediaAnimation(f.read())
+                self.start_gif = InputFile(f.read()) # Используем InputFile для отправки
             with open(os.path.join("static", "9d.gif"), "rb") as f:
-                self.pro_gif = InputMediaAnimation(f.read())
+                self.pro_gif = InputFile(f.read()) # Используем InputFile для отправки
             logger.info("Медиафайлы загружены в кэш")
+        except FileNotFoundError:
+            logger.error("Один или несколько медиафайлов не найдены в папке 'static'. Убедитесь, что файлы '14.gif' и '9d.gif' существуют.")
         except Exception as e:
             logger.error(f"Ошибка загрузки медиа: {e}")
 
@@ -87,11 +92,11 @@ RU_TEXTS = {
         "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
         "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
         "**2.** Настройте параметры генерации:\n"
-        "   • Sampling method: **DPM++ 2M SDE**\n"
-        "   • Steps: **20**\n"
-        "   • Width: **720**\n"
-        "   • Height: **980**\n"
-        "   • CFG Scale: **4**\n\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
         "**3.** Генерируйте изображения **бесплатно**!\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
@@ -195,11 +200,11 @@ EN_TEXTS = {
         "**HOW TO USE:**\n\n"
         "**1.** Enter text prompt in English or use ready examples\n\n"
         "**2.** Configure generation parameters:\n"
-        "   • Sampling method: **DPM++ 2M SDE**\n"
-        "   • Steps: **20**\n"
-        "   • Width: **720**\n"
-        "   • Height: **980**\n"
-        "   • CFG Scale: **4**\n\n"
+        "   • Sampling method: **DPM++ 2M SDE**\n"
+        "   • Steps: **20**\n"
+        "   • Width: **720**\n"
+        "   • Height: **980**\n"
+        "   • CFG Scale: **4**\n\n"
         "**3.** Generate images **for free**!\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
@@ -307,13 +312,23 @@ async def safe_delete_message(chat_id: int, message_id: int, context: ContextTyp
     except Exception as e:
         logger.warning(f"Не удалось удалить сообщение: {e}")
 
+# Функцию send_with_retry можно адаптировать, если она используется для отправки GIF.
+# В данном случае, так как мы используем InputFile, она не требуется для GIF.
+# Она больше подходит для более сложных механизмов отправки или для универсальной отправки.
+# В рамках предложенных изменений она не используется напрямую.
 async def send_with_retry(chat_id, content, context, retry_count=3):
     for attempt in range(retry_count):
         try:
             if isinstance(content, str):
                 return await context.bot.send_message(chat_id, content)
-            elif isinstance(content, dict):
-                return await context.bot.send_animation(chat_id, **content)
+            elif isinstance(content, dict): # Предполагаем, что это для send_animation или send_photo
+                if 'animation' in content:
+                    return await context.bot.send_animation(chat_id, **content)
+                # Добавьте другие типы медиа, если необходимо
+            # Это может быть универсальный способ, если InputFile передается в content['animation']
+            elif isinstance(content, InputFile): # Если content уже InputFile
+                return await context.bot.send_animation(chat_id, animation=content)
+
         except RetryAfter as e:
             wait_time = e.retry_after + 1
             logger.warning(f"Rate limited. Waiting {wait_time} sec (attempt {attempt + 1})")
@@ -324,54 +339,87 @@ async def send_with_retry(chat_id, content, context, retry_count=3):
     return None
 
 # --- Обработчики ---
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка команды /start"""
     try:
         user = update.effective_user
         logger.info(f"Новый пользователь: {user.id} {user.username}")
         
+        # Инициализация состояния пользователя
         context.user_data.clear()
         context.user_data["prompt_index"] = 0
         
+        # Кнопки выбора языка
         keyboard = [
             [
-                InlineKeyboardButton("🇷🇺 Русский", callback_data="set_lang_ru"),
-                InlineKeyboardButton("🇺🇸 English", callback_data="set_lang_en")
+                InlineKeyboardButton("🇷🇺 Русский", callback_data="lang_ru"),
+                InlineKeyboardButton("🇺🇸 English", callback_data="lang_en")
             ]
         ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
         
+        # Отправляем только одно сообщение с кнопками
         await update.message.reply_text(
             "Please select language / Пожалуйста, выберите язык:",
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=reply_markup
         )
         
     except Exception as e:
-        logger.error(f"Ошибка в /start: {e}")
-        await error_handler(update, context)
+        logger.error(f"Ошибка в команде /start: {str(e)}")
+        try:
+            await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
+        except Exception as ex:
+            logger.error(f"Не удалось отправить сообщение об ошибке в start: {ex}")
 
-async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str):
-    """Общая функция установки языка"""
+async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str) -> None:
+    """Установка языка"""
     try:
         query = update.callback_query
         await query.answer()
         
+        # Сохраняем выбранный язык
         context.user_data["lang"] = lang
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Комбинированное сообщение
-        message = await query.message.reply_text(
+        # Удаляем предыдущее сообщение с выбором языка
+        if query.message:
+            try:
+                await query.message.delete()
+            except BadRequest as e:
+                logger.warning(f"Не удалось удалить сообщение (возможно, уже удалено): {e}")
+            except Exception as e:
+                logger.error(f"Ошибка при удалении сообщения в set_language: {e}")
+        
+        # Отправляем основное сообщение
+        await query.message.reply_text(
             f"🎬 {texts.get('training_video', 'Видео обучения:')} {videos['free_train']}\n\n"
-            f"{texts['start']}\n\n"
-            f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
+            f"{texts['start']}",
             parse_mode='Markdown',
             disable_web_page_preview=True
         )
         
-        # Сохраняем ID для возможного удаления
-        context.user_data["last_msg_id"] = message.message_id
+        # Отправка GIF или текстовой ссылки
+        try:
+            if media_cache.start_gif:
+                await query.message.reply_animation(
+                    animation=media_cache.start_gif,
+                    caption=f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
+                    parse_mode='Markdown' # Добавлен parse_mode для caption
+                )
+            else:
+                await query.message.reply_text(
+                    f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
+                    parse_mode='Markdown' # Добавлен parse_mode
+                )
+        except Exception as e:
+            logger.error(f"Ошибка отправки медиа (start_gif): {e}")
+            await query.message.reply_text(
+                f"🚀 {texts.get('start_generating', 'Начните генерацию:')} {COLAB_URL}",
+                parse_mode='Markdown' # Добавлен parse_mode
+            )
         
-        # Кнопки
+        # Кнопки для дальнейших действий
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -381,22 +429,23 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
                 InlineKeyboardButton(texts["ikona_training_btn"], callback_data="ikona_training")
             ]
         ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
         
         await query.message.reply_text(
             texts["choose_action"],
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=reply_markup
         )
         
     except Exception as e:
-        logger.error(f"Ошибка установки языка: {e}")
+        logger.error(f"Ошибка в set_language: {str(e)}")
         await error_handler(update, context)
 
-async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик для русского языка"""
+async def lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Обработчик выбора русского языка"""
     await set_language(update, context, "ru")
 
-async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Обработчик для английского языка"""
+async def lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Обработчик выбора английского языка"""
     await set_language(update, context, "en")
 
 async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -533,12 +582,14 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.reply_animation(
                 animation=media_cache.pro_gif,
                 caption=texts["pro_caption"],
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown' # Добавлен parse_mode для caption
             )
         else:
             await query.message.reply_text(
                 texts["pro_caption"],
-                reply_markup=InlineKeyboardMarkup(keyboard)
+                reply_markup=InlineKeyboardMarkup(keyboard),
+                parse_mode='Markdown' # Добавлен parse_mode
             )
         
     except Exception as e:
@@ -714,7 +765,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
                 logger.error(f"Не удалось отправить сообщение об ошибке: {e}")
 
 # --- Основная функция ---
-async def main():
+async def main_async(): # Изменено имя для ясности, так как main() вызывает asyncio.run()
     """Запуск бота"""
     try:
         # Загрузка кэша
@@ -727,8 +778,8 @@ async def main():
         app.add_handler(CommandHandler("start", start))
         
         # Обработчики callback
-        app.add_handler(CallbackQueryHandler(set_lang_ru, pattern="^set_lang_ru$"))
-        app.add_handler(CallbackQueryHandler(set_lang_en, pattern="^set_lang_en$"))
+        app.add_handler(CallbackQueryHandler(lang_ru, pattern="^lang_ru$")) # Изменено с set_lang_ru
+        app.add_handler(CallbackQueryHandler(lang_en, pattern="^lang_en$")) # Изменено с set_lang_en
         app.add_handler(CallbackQueryHandler(show_prompt, pattern="^show_prompt$"))
         app.add_handler(CallbackQueryHandler(main_menu, pattern="^main_menu$"))
         app.add_handler(CallbackQueryHandler(free_train, pattern="^free_train$"))
@@ -755,4 +806,4 @@ async def main():
         logger.info("Бот остановлен")
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main_async()) # Вызываем асинхронную функцию

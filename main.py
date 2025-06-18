@@ -145,7 +145,7 @@ RU_TEXTS = {
         "🏢 **Поддержка в выборе салона** — поможем найти салон в вашем городе\n\n"
         "👥 **Поиск модели** — организуем полноценный сеанс под контролем преподавателя для вашей уверенности\n\n"
         "**УСЛОВИЯ:**\n\n"
-        "⏱️ **Срок обучения:** 2 месяцев\n"
+        "⏱️ **Срок обучения:** 2 месяца\n"
         "💰 **Стоимость:** 79 000 рублей"
     ),
     "contact_for_trial": (
@@ -350,7 +350,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await error_handler(update, context)
 
 async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str):
-    """Установка языка"""
+    """Общая функция установки языка"""
     try:
         query = update.callback_query
         await query.answer()
@@ -390,6 +390,14 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
     except Exception as e:
         logger.error(f"Ошибка установки языка: {e}")
         await error_handler(update, context)
+
+async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработчик для русского языка"""
+    await set_language(update, context, "ru")
+
+async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Обработчик для английского языка"""
+    await set_language(update, context, "en")
 
 async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Показ примера промта"""
@@ -681,9 +689,9 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         await update.message.reply_text(
             texts["use_buttons"],
-            reply_markup=InlineKeyboardMarkup(
+            reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
-            )
+            ])
         )
         
     except Exception as e:

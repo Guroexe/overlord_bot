@@ -60,18 +60,18 @@ RU_TEXTS = {
     "start": (
         "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
         "**Бесплатная версия нейросети** для генерации изображений в стиле:\n"
-        "* Sigilism\n" # Changed from • to *
-        "* Tribal\n"   # Changed from • to * and ensured proper newline
-        "* Dark Tattoo\n\n" # Changed from • to *
+        "* Sigilism\n"
+        "* Tribal\n"
+        "* Dark Tattoo\n\n"
         "Создавайте уникальные арты **без ограничений**!\n\n"
         "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
         "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
         "**2.** Настройте параметры генерации:\n"
-        "   * Sampling method: **DPM++ 2M SDE**\n" # Changed from • to *
-        "   * Steps: **20**\n" # Changed from • to *
-        "   * Width: **720**\n" # Changed from • to *
-        "   * Height: **980**\n" # Changed from • to *
-        "   * CFG Scale: **4**\n\n" # Changed from • to *
+        "   * Sampling method: **DPM++ 2M SDE**\n"
+        "   * Steps: **20**\n"
+        "   * Width: **720**\n"
+        "   * Height: **980**\n"
+        "   * CFG Scale: **4**\n\n"
         "**3.** Генерируйте изображения **бесплатно**!\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
@@ -110,9 +110,9 @@ RU_TEXTS = {
         "💰 **Стоимость:** 99 000 рублей\n\n"
         "**БЕСПЛАТНЫЙ ПЕРВЫЙ УРОК!**\n\n"
         "Приходите на пробное занятие, где мы:\n"
-        "* Подробно расскажем о программе\n" # Changed from • to *
-        "* Дадим набить первую татуировку на искусственной коже\n" # Changed from • to *
-        "* Вы попробуете себя в роли **Тату-Мастера**!" # Changed from • to *
+        "* Подробно расскажем о программе\n"
+        "* Дадим набить первую татуировку на искусственной коже\n"
+        "* Вы попробуете себя в роли **Тату-Мастера**!"
     ),
     "online_training": (
         "**ОНЛАЙН ОБУЧЕНИЕ IKONA**\n\n"
@@ -142,7 +142,7 @@ RU_TEXTS = {
     ),
     "prompt_not_found": "⚠️ Примеры промтов временно недоступны",
     "file_not_found": "⚠️ Файл не найден",
-    "error": "⚠️ Если не появились кнопки, нажмите /start ",
+    "error": "⚠️ Если не появились кнопки, нажмите /start",
     "choose_action": "Выберите действие:",
     "what_next": "Что дальше?",
     "main_menu": "**ГЛАВНОЕ МЕНЮ:**",
@@ -153,7 +153,7 @@ RU_TEXTS = {
     "prompt_example": "Пример промта",
     "full_version": "ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +",
     "ikona_training_btn": "Обучение Тату IKONA",
-    "free_train_btn": "OVERLORD AI INK (Free Train)",
+    "free_train_btn": "OVERLORD AI INK (Free Trial)",
     "offline_training_btn": "Оффлайн обучение IKONA в Москве и Питере",
     "online_training_btn": "Онлайн обучение IKONA",
     "trial_lesson": "Записаться на Пробный Урок / Обучение",
@@ -166,18 +166,18 @@ EN_TEXTS = {
     "start": (
         "🖌️ **OVERLORD AI INK (Free Trial)**\n\n"
         "**Free version of neural network** for generating images in styles:\n"
-        "* Sigilism\n" # Changed from • to *
-        "* Tribal\n"   # Changed from • to * and ensured proper newline
-        "* Dark Tattoo\n\n" # Changed from • to *
+        "* Sigilism\n"
+        "* Tribal\n"
+        "* Dark Tattoo\n\n"
         "Create unique artworks **without limitations**!\n\n"
         "**HOW TO USE:**\n\n"
         "**1.** Enter text prompt in English or use ready examples\n\n"
         "**2.** Configure generation parameters:\n"
-        "   * Sampling method: **DPM++ 2M SDE**\n" # Changed from • to *
-        "   * Steps: **20**\n" # Changed from • to *
-        "   * Width: **720**\n" # Changed from • to *
-        "   * Height: **980**\n" # Changed from • to *
-        "   * CFG Scale: **4**\n\n" # Changed from • to *
+        "   * Sampling method: **DPM++ 2M SDE**\n"
+        "   * Steps: **20**\n"
+        "   * Width: **720**\n"
+        "   * Height: **980**\n"
+        "   * CFG Scale: **4**\n\n"
         "**3.** Generate images **for free**!\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
@@ -216,9 +216,9 @@ EN_TEXTS = {
         "💰 **Price:** 99,000 rubles\n\n"
         "**FREE FIRST LESSON!**\n\n"
         "Come to a trial lesson where we will:\n"
-        "* Tell you in detail about the program\n" # Changed from • to *
-        "* Let you make your first tattoo on artificial skin\n" # Changed from • to *
-        "* You will try yourself as a **Tattoo Master**!" # Changed from • to *
+        "* Tell you in detail about the program\n"
+        "* Let you make your first tattoo on artificial skin\n"
+        "* You will try yourself as a **Tattoo Master**!"
     ),
     "online_training": (
         "**ONLINE IKONA TRAINING**\n\n"
@@ -248,7 +248,7 @@ EN_TEXTS = {
     ),
     "prompt_not_found": "⚠️ Prompt examples temporarily unavailable",
     "file_not_found": "⚠️ File not found",
-    "error": "⚠️ If the buttons do not appear, нажмите /start",
+    "error": "⚠️ If the buttons do not appear, press /start",
     "choose_action": "Choose action:",
     "what_next": "What's next?",
     "main_menu": "**MAIN MENU:**",
@@ -294,17 +294,20 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
     иначе отправляет файл с диска и сохраняет file_id.
     """
     # Определяем, где искать/хранить file_id
+    file_id_store = None
     if media_type == "animation":
         file_id_store = GIF_FILE_IDS
     elif media_type == "photo":
         file_id_store = PROMPT_IMAGE_FILE_IDS
     else:
         logger.error(f"Неизвестный тип медиа для send_media_with_file_id: {media_type}")
+        await message.reply_text(f"⚠️ Внутренняя ошибка бота при обработке медиа. Пожалуйста, попробуйте позже.", parse_mode='Markdown')
         return
 
     current_file_id = file_id_store.get(file_name)
     full_file_path = os.path.join("static", file_name)
-
+    
+    # Попытка отправить по file_id
     if current_file_id:
         try:
             if media_type == "animation":
@@ -317,10 +320,12 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
             logger.warning(f"Ошибка при отправке медиа '{file_name}' по file_id ({current_file_id}): {e}. Попытка отправить с диска.")
             file_id_store[file_name] = None # Сбрасываем file_id, если он недействителен
 
+
     # Если file_id не найден или недействителен, отправляем с диска
     if not os.path.exists(full_file_path):
         logger.error(f"Файл '{full_file_path}' не найден.")
-        await message.reply_text(f"{caption}\n\n{RU_TEXTS['file_not_found'] if message.chat_id else EN_TEXTS['file_not_found']}", parse_mode='Markdown')
+        # Fallback: send text if file not found
+        await message.reply_text(f"{texts['file_not_found']}\n\n{caption}", parse_mode='Markdown')
         return
 
     try:
@@ -339,9 +344,12 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
                 logger.info(f"Медиафайл '{file_name}' отправлен с диска и сохранен file_id: {new_file_id}")
             else:
                 logger.error(f"Не удалось получить file_id для '{file_name}' после отправки.")
+                # Fallback: send text if file_id not obtained
+                await message.reply_text(f"⚠️ Ошибка при отправке медиа. Промт: {caption}", parse_mode='Markdown')
 
     except Exception as e:
         logger.error(f"Ошибка при отправке медиафайла '{full_file_path}': {e}")
+        # Fallback: send text if general error during send
         await message.reply_text(f"⚠️ Ошибка при отправке медиа.\n\n{caption if caption else ''}", parse_mode='Markdown')
 
 
@@ -443,7 +451,7 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await send_media_with_file_id(
             query.message,
             "photo",
-            prompt_data["image"], # Имя файла, например "image1.jpg"
+            prompt_data["image"], # Имя файла, например "1.png"
             caption=prompt_data["prompt"]
         )
         
@@ -463,7 +471,7 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         
     except Exception as e:
         logger.error(f"Ошибка в show_prompt: {str(e)}")
-        await query.message.reply_text("⚠️ Не удалось загрузить пример")
+        await query.message.reply_text(texts["error"]) # Generic error for show_prompt
 
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -545,7 +553,8 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         
         # 2. Объединенный текст PRO и кнопка в подписи PRO GIF
         pro_gif_path = "9d.gif"
-        caption_text = f"{texts['pro_features']}\n\n{texts['pro_caption']}"
+        # Concatenate pro_features and pro_caption with two newlines for better spacing
+        caption_text = f"{texts['pro_features']}\n\n{texts['pro_caption']}" 
         
         keyboard_pro = [
             [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]

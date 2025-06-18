@@ -322,9 +322,13 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
     # Если file_id не найден или недействителен, отправляем с диска
     if not os.path.exists(full_file_path):
         logger.error(f"Файл '{full_file_path}' не найден.")
-        # Fallback: send text if file not found
-        # Using texts['file_not_found'] to get localized message
-        await message.reply_text(f"{texts[message.bot.lang].get('file_not_found', '⚠️ File not found.')}\n\n{caption}", parse_mode='Markdown') 
+        # Determine current language for fallback message
+        lang = "ru" # Default to Russian
+        if hasattr(message.bot, 'lang') and message.bot.lang in ["ru", "en"]:
+            lang = message.bot.lang
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+
+        await message.reply_text(f"{texts['file_not_found']}\n\n{caption}", parse_mode='Markdown') 
         return
 
     try:
@@ -342,12 +346,10 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
                 logger.info(f"Медиафайл '{file_name}' отправлен с диска и сохранен file_id: {new_file_id}")
             else:
                 logger.error(f"Не удалось получить file_id для '{file_name}' после отправки.")
-                # Fallback: send text if file_id not obtained
                 await message.reply_text(f"⚠️ Ошибка при отправке медиа. Промт: {caption}", parse_mode='Markdown')
 
     except Exception as e:
         logger.error(f"Ошибка при отправке медиафайла '{full_file_path}': {e}")
-        # Fallback: send text if general error during send
         await message.reply_text(f"⚠️ Ошибка при отправке медиа.\n\n{caption if caption else ''}", parse_mode='Markdown')
 
 
@@ -359,6 +361,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         
         context.user_data["prompt_index"] = 0
         
+        # Set default language for the bot instance in context
+        context.bot.lang = "ru" # Default to Russian until user selects
+
         keyboard = [
             [
                 InlineKeyboardButton("🇷🇺 Русский", callback_data="set_lang_ru"),
@@ -380,7 +385,7 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         await query.answer()
         
         context.user_data["lang"] = lang
-        # Set bot's language for fallback messages
+        # Set bot's language for fallback messages based on user selection
         context.bot.lang = lang 
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
@@ -388,7 +393,7 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         await query.message.reply_text(f"🎬 {'Видео обучения:' if lang == 'ru' else 'Training video:'} {videos['free_train']}")
         
         gif_path = "14.gif"
-        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
+        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'}\n{COLAB_URL}"
 
         await send_media_with_file_id(
             query.message,
@@ -430,7 +435,6 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await query.answer()
         
         lang = context.user_data.get("lang", "ru")
-        # Ensure texts are correctly fetched based on current language
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS 
         context.bot.lang = lang # Set bot's language for fallback messages
 
@@ -440,7 +444,6 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             
         current_index = context.user_data.get("prompt_index", 0)
         
-        # Ensure index is within bounds, especially if prompts.json changes
         if not (0 <= current_index < len(PROMPTS)):
             logger.error(f"Invalid prompt_index: {current_index}. Resetting to 0.")
             current_index = 0
@@ -453,7 +456,7 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await send_media_with_file_id(
             query.message,
             "photo",
-            prompt_data["image"],
+            prompt_data["image"], # file_name, e.g., "1.png"
             caption=prompt_data["prompt"]
         )
         
@@ -512,7 +515,6 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         await query.message.reply_text(f"🎬 {'Видео обучения:' if lang == 'ru' else 'Training video:'} {videos['free_train']}")
         
         gif_path = "14.gif"
-        # Adjusted caption for clarity
         caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'}\n{COLAB_URL}"
 
         await send_media_with_file_id(
@@ -552,7 +554,6 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await query.message.reply_text(f"🎬 {'PRO обучение:' if lang == 'ru' else 'PRO Training:'} {videos['pro_version']}")
         
         pro_gif_path = "9d.gif"
-        # Adjusted caption for better readability
         caption_text = f"{texts['pro_features']}\n\n{texts['pro_caption']}" 
         
         keyboard_pro = [
@@ -702,9 +703,9 @@ def main() -> None:
     try:
         application = Application.builder().token(TOKEN).build()
         
-        # Добавляем свойство 'lang' к объекту bot
-        # Это нужно для send_media_with_file_id для получения текстов ошибок
-        application.bot.lang = "ru" # Дефолтный язык
+        # Initialize a default language for the bot instance itself
+        # This is primarily for fallback messages in send_media_with_file_id
+        application.bot.lang = "ru" 
 
         # Обработчики команд
         application.add_handler(CommandHandler("start", start))

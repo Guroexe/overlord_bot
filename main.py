@@ -34,22 +34,22 @@ if not TOKEN:
     logger.error("Токен бота не найден в переменных окружения!")
     raise ValueError("Токен бота не найден")
 
-# Видео для русской версии (URLs, не локальные файлы)
+# Видео для русской версии (теперь с возможностью хранения file_id - для ссылок это неактуально, но для структуры оставлено)
 RU_VIDEOS = {
-    "free_train": "https://youtu.be/mxxbhZ8SxTU",
-    "pro_version": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR",
-    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
-    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
-    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
+    "free_train": {"url": "https://youtu.be/mxxbhZ8SxTU"},
+    "pro_version": {"url": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR"},
+    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY"},
+    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc"},
+    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8"}
 }
 
-# Видео для английской версии (URLs, не локальные файлы)
+# Видео для английской версии
 EN_VIDEOS = {
-    "free_train": "https://youtu.be/RcLS9A24Kss",
-    "pro_version": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w",
-    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
-    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
-    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
+    "free_train": {"url": "https://youtu.be/RcLS9A24Kss"},
+    "pro_version": {"url": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w"},
+    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY"},
+    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc"},
+    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8"}
 }
 
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
@@ -67,11 +67,11 @@ RU_TEXTS = {
         "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
         "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
         "**2.** Настройте параметры генерации:\n"
-        "   * Sampling method: **DPM++ 2M SDE**\n"
-        "   * Steps: **20**\n"
-        "   * Width: **720**\n"
-        "   * Height: **980**\n"
-        "   * CFG Scale: **4**\n\n"
+        "   * Sampling method: **DPM++ 2M SDE**\n"
+        "   * Steps: **20**\n"
+        "   * Width: **720**\n"
+        "   * Height: **980**\n"
+        "   * CFG Scale: **4**\n\n"
         "**3.** Генерируйте изображения **бесплатно**!\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
@@ -173,11 +173,11 @@ EN_TEXTS = {
         "**HOW TO USE:**\n\n"
         "**1.** Enter text prompt in English or use ready examples\n\n"
         "**2.** Configure generation parameters:\n"
-        "   * Sampling method: **DPM++ 2M SDE**\n"
-        "   * Steps: **20**\n"
-        "   * Width: **720**\n"
-        "   * Height: **980**\n"
-        "   * CFG Scale: **4**\n\n"
+        "   * Sampling method: **DPM++ 2M SDE**\n"
+        "   * Steps: **20**\n"
+        "   * Width: **720**\n"
+        "   * Height: **980**\n"
+        "   * CFG Scale: **4**\n\n"
         "**3.** Generate images **for free**!\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
@@ -277,12 +277,14 @@ except Exception as e:
     PROMPTS = []
 
 # Глобальное хранилище для file_id GIF-файлов, чтобы не загружать их повторно
+# Эти ID будут сбрасываться при перезапуске бота, для постоянного хранения нужна база данных/файл
 GIF_FILE_IDS = {
     "14.gif": None,
     "9d.gif": None,
 }
 
 # Вспомогательное хранилище для file_id изображений промтов
+# Эти ID будут сбрасываться при перезапуске бота, для постоянного хранения нужна база данных/файл
 PROMPT_IMAGE_FILE_IDS = {}
 
 
@@ -322,12 +324,8 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
     # Если file_id не найден или недействителен, отправляем с диска
     if not os.path.exists(full_file_path):
         logger.error(f"Файл '{full_file_path}' не найден.")
-        # Determine current language for fallback message
-        lang = "ru" # Default to Russian
-        # Accessing texts based on bot's current language preference
-        texts_for_fallback = RU_TEXTS if message.bot.lang == "ru" else EN_TEXTS
-
-        await message.reply_text(f"{texts_for_fallback['file_not_found']}\n\n{caption}", parse_mode='Markdown') 
+        # Fallback: send text if file not found
+        await message.reply_text(f"{texts['file_not_found']}\n\n{caption}", parse_mode='Markdown')
         return
 
     try:
@@ -338,17 +336,20 @@ async def send_media_with_file_id(message, media_type: str, file_name: str, capt
                 new_file_id = sent_message.animation.file_id
             elif media_type == "photo":
                 sent_message = await message.reply_photo(photo=InputFile(file_to_send), caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
-                new_file_id = sent_message.photo[-1].file_id # Get the largest photo size's file_id
+                # Telegram возвращает список размеров фото, берем последний (самый большой)
+                new_file_id = sent_message.photo[-1].file_id 
             
             if new_file_id:
                 file_id_store[file_name] = new_file_id
                 logger.info(f"Медиафайл '{file_name}' отправлен с диска и сохранен file_id: {new_file_id}")
             else:
                 logger.error(f"Не удалось получить file_id для '{file_name}' после отправки.")
+                # Fallback: send text if file_id not obtained
                 await message.reply_text(f"⚠️ Ошибка при отправке медиа. Промт: {caption}", parse_mode='Markdown')
 
     except Exception as e:
         logger.error(f"Ошибка при отправке медиафайла '{full_file_path}': {e}")
+        # Fallback: send text if general error during send
         await message.reply_text(f"⚠️ Ошибка при отправке медиа.\n\n{caption if caption else ''}", parse_mode='Markdown')
 
 
@@ -358,12 +359,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         user = update.effective_user
         logger.info(f"Новый пользователь: {user.id} {user.username}")
         
+        # Инициализация состояния пользователя
         context.user_data["prompt_index"] = 0
         
-        # Set default language for the bot instance in context
-        # This is primarily for fallback messages in send_media_with_file_id
-        context.bot.lang = "ru" # Default to Russian until user selects
-
+        # Кнопки выбора языка
         keyboard = [
             [
                 InlineKeyboardButton("🇷🇺 Русский", callback_data="set_lang_ru"),
@@ -384,16 +383,18 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         query = update.callback_query
         await query.answer()
         
+        # Сохраняем выбранный язык
         context.user_data["lang"] = lang
-        # Set bot's language for fallback messages based on user selection
-        context.bot.lang = lang 
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        await query.message.reply_text(f"🎬 {'Видео обучения:' if lang == 'ru' else 'Training video:'} {videos['free_train']}")
+        # 1. Отправка YouTube видео
+        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
+        await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
         
+        # 2. Объединенный текст и ссылка COLAB в подписи GIF
         gif_path = "14.gif"
-        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'}\n{COLAB_URL}"
+        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
 
         await send_media_with_file_id(
             query.message,
@@ -402,6 +403,7 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
             caption=caption_text
         )
         
+        # 3. Кнопки основного меню
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -435,34 +437,29 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await query.answer()
         
         lang = context.user_data.get("lang", "ru")
-        texts = RU_TEXTS if lang == "ru" else EN_TEXTS 
-        context.bot.lang = lang # Set bot's language for fallback messages
-
+        texts = RU_TEXTS if lang == "ru" else EN_TEXTS
+        
         if not PROMPTS:
             await query.message.reply_text(texts["prompt_not_found"])
             return
             
+        # Получение текущего индекса
         current_index = context.user_data.get("prompt_index", 0)
-        
-        if not (0 <= current_index < len(PROMPTS)):
-            logger.error(f"Invalid prompt_index: {current_index}. Resetting to 0.")
-            current_index = 0
-            context.user_data["prompt_index"] = 0 # Reset index
-            await query.message.reply_text(texts["prompt_not_found"])
-            return
-
         prompt_data = PROMPTS[current_index]
         
+        # Отправляем фото
         await send_media_with_file_id(
             query.message,
             "photo",
-            prompt_data["image"], # file_name, e.g., "1.png"
+            prompt_data["image"], # Имя файла, например "1.png"
             caption=prompt_data["prompt"]
         )
         
+        # Обновление индекса
         next_index = (current_index + 1) % len(PROMPTS)
         context.user_data["prompt_index"] = next_index
         
+        # Кнопки для продолжения
         keyboard = [
             [
                 InlineKeyboardButton(texts["more_examples"], callback_data="show_prompt"),
@@ -470,14 +467,12 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             ]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
+        # Send the "What's next?" message *after* the image, to ensure proper ordering
         await query.message.reply_text(texts["what_next"], reply_markup=reply_markup)
         
     except Exception as e:
         logger.error(f"Ошибка в show_prompt: {str(e)}")
-        # Provide more specific error if possible, otherwise generic
-        lang = context.user_data.get("lang", "ru")
-        texts_error = RU_TEXTS if lang == "ru" else EN_TEXTS
-        await query.message.reply_text(texts_error["error"])
+        await query.message.reply_text(texts["error"]) # Generic error for show_prompt
 
 
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -510,12 +505,14 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
-        context.bot.lang = lang # Set bot's language for fallback messages
-
-        await query.message.reply_text(f"🎬 {'Видео обучения:' if lang == 'ru' else 'Training video:'} {videos['free_train']}")
         
+        # 1. Отправка YouTube видео
+        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
+        await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
+        
+        # 2. Объединенный текст и ссылка COLAB в подписи GIF
         gif_path = "14.gif"
-        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'}\n{COLAB_URL}"
+        caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
 
         await send_media_with_file_id(
             query.message,
@@ -524,6 +521,7 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             caption=caption_text
         )
         
+        # 3. Кнопки основного меню
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -549,11 +547,14 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
-        context.bot.lang = lang # Set bot's language for fallback messages
-
-        await query.message.reply_text(f"🎬 {'PRO обучение:' if lang == 'ru' else 'PRO Training:'} {videos['pro_version']}")
         
+        # 1. Отправка PRO видео
+        video_text = "🎬 PRO обучение:" if lang == "ru" else "🎬 PRO Training:"
+        await query.message.reply_text(f"{video_text} {videos['pro_version']['url']}")
+        
+        # 2. Объединенный текст PRO и кнопка в подписи PRO GIF
         pro_gif_path = "9d.gif"
+        # Concatenate pro_features and pro_caption with two newlines for better spacing
         caption_text = f"{texts['pro_features']}\n\n{texts['pro_caption']}" 
         
         keyboard_pro = [
@@ -569,6 +570,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             reply_markup=reply_markup_pro
         )
 
+        # 3. Кнопки для возврата
         keyboard = [
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
@@ -588,12 +590,15 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
-        context.bot.lang = lang # Set bot's language for fallback messages
-
-        await query.message.reply_text(f"🎬 {'Обучение IKONA:' if lang == 'ru' else 'IKONA Training:'} {videos['ikona_training']}")
         
+        # Отправка видео
+        video_text = "🎬 Обучение IKONA:" if lang == "ru" else "🎬 IKONA Training:"
+        await query.message.reply_text(f"{video_text} {videos['ikona_training']['url']}")
+        
+        # Описание обучения
         await query.message.reply_text(texts["ikona_training"], parse_mode='Markdown')
         
+        # Кнопки выбора программы
         keyboard = [
             [InlineKeyboardButton(texts["offline_training_btn"], callback_data="offline_training")],
             [InlineKeyboardButton(texts["online_training_btn"], callback_data="online_training")]
@@ -615,12 +620,15 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
-        context.bot.lang = lang # Set bot's language for fallback messages
-
-        await query.message.reply_text(f"🎬 {'Оффлайн обучение:' if lang == 'ru' else 'Offline training:'} {videos['offline_training']}")
         
+        # Отправка видео
+        video_text = "🎬 Оффлайн обучение:" if lang == "ru" else "🎬 Offline training:"
+        await query.message.reply_text(f"{video_text} {videos['offline_training']['url']}")
+        
+        # Описание оффлайн обучения
         await query.message.reply_text(texts["offline_training"], parse_mode='Markdown')
         
+        # Кнопки
         keyboard = [
             [InlineKeyboardButton(texts["trial_lesson"], callback_data="contact_for_trial")],
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
@@ -641,12 +649,15 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
-        context.bot.lang = lang # Set bot's language for fallback messages
-
-        await query.message.reply_text(f"🎬 {'Онлайн обучение:' if lang == 'ru' else 'Online training:'} {videos['online_training']}")
         
+        # Отправка видео
+        video_text = "🎬 Онлайн обучение:" if lang == "ru" else "🎬 Online training:"
+        await query.message.reply_text(f"{video_text} {videos['online_training']['url']}")
+        
+        # Описание онлайн обучения
         await query.message.reply_text(texts["online_training"], parse_mode='Markdown')
         
+        # Кнопки
         keyboard = [
             [InlineKeyboardButton(texts["more_details"], callback_data="contact_for_details")],
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
@@ -703,10 +714,6 @@ def main() -> None:
     try:
         application = Application.builder().token(TOKEN).build()
         
-        # Initialize a default language for the bot instance itself
-        # This is primarily for fallback messages in send_media_with_file_id
-        application.bot.lang = "ru" 
-
         # Обработчики команд
         application.add_handler(CommandHandler("start", start))
         

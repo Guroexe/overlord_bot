@@ -34,23 +34,22 @@ if not TOKEN:
     logger.error("Токен бота не найден в переменных окружения!")
     raise ValueError("Токен бота не найден")
 
-# Видео для русской версии (теперь с возможностью хранения file_id)
-# Изначально будут ссылки, но после первой отправки бота будут сохранены file_id
+# Видео для русской версии (теперь с возможностью хранения file_id - для ссылок это неактуально, но для структуры оставлено)
 RU_VIDEOS = {
-    "free_train": {"url": "https://youtu.be/mxxbhZ8SxTU", "file_id": None},
-    "pro_version": {"url": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR", "file_id": None},
-    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY", "file_id": None},
-    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc", "file_id": None},
-    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8", "file_id": None}
+    "free_train": {"url": "https://youtu.be/mxxbhZ8SxTU"},
+    "pro_version": {"url": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR"},
+    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY"},
+    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc"},
+    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8"}
 }
 
 # Видео для английской версии
 EN_VIDEOS = {
-    "free_train": {"url": "https://youtu.be/RcLS9A24Kss", "file_id": None},
-    "pro_version": {"url": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w", "file_id": None},
-    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY", "file_id": None},
-    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc", "file_id": None},
-    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8", "file_id": None}
+    "free_train": {"url": "https://youtu.be/RcLS9A24Kss"},
+    "pro_version": {"url": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w"},
+    "ikona_training": {"url": "https://www.youtube.com/watch?v=GX_ZbWx0oYY"},
+    "offline_training": {"url": "https://www.youtube.com/watch?v=Kopx3whZquc"},
+    "online_training": {"url": "https://www.youtube.com/watch?v=10b_j5gBAg8"}
 }
 
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
@@ -61,18 +60,18 @@ RU_TEXTS = {
     "start": (
         "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
         "**Бесплатная версия нейросети** для генерации изображений в стиле:\n"
-        "* Sigilism\n"
-        "* Tribal\
-        "* Dark Tattoo\n\n"
+        "* Sigilism\n" # Changed from • to *
+        "* Tribal\n"   # Changed from • to * and ensured proper newline
+        "* Dark Tattoo\n\n" # Changed from • to *
         "Создавайте уникальные арты **без ограничений**!\n\n"
         "**КАК ИСПОЛЬЗОВАТЬ:**\n\n"
         "**1.** Введите текстовый промт на английском языке или используйте готовые примеры\n\n"
         "**2.** Настройте параметры генерации:\n"
-        "   - Sampling method: **DPM++ 2M SDE**\n"
-        "   - Steps: **20**\n"
-        "   - Width: **720**\n"
-        "   - Height: **980**\n"
-        "   - CFG Scale: **4**\n\n"
+        "   * Sampling method: **DPM++ 2M SDE**\n" # Changed from • to *
+        "   * Steps: **20**\n" # Changed from • to *
+        "   * Width: **720**\n" # Changed from • to *
+        "   * Height: **980**\n" # Changed from • to *
+        "   * CFG Scale: **4**\n\n" # Changed from • to *
         "**3.** Генерируйте изображения **бесплатно**!\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
@@ -111,9 +110,9 @@ RU_TEXTS = {
         "💰 **Стоимость:** 99 000 рублей\n\n"
         "**БЕСПЛАТНЫЙ ПЕРВЫЙ УРОК!**\n\n"
         "Приходите на пробное занятие, где мы:\n"
-        "• Подробно расскажем о программе\n"
-        "• Дадим набить первую татуировку на искусственной коже\n"
-        "• Вы попробуете себя в роли **Тату-Мастера**!"
+        "* Подробно расскажем о программе\n" # Changed from • to *
+        "* Дадим набить первую татуировку на искусственной коже\n" # Changed from • to *
+        "* Вы попробуете себя в роли **Тату-Мастера**!" # Changed from • to *
     ),
     "online_training": (
         "**ОНЛАЙН ОБУЧЕНИЕ IKONA**\n\n"
@@ -125,6 +124,7 @@ RU_TEXTS = {
         "📦 **Профессиональная тату-машинка** — высылаем со всеми необходимыми компонентами для домашнего обучения\n\n"
         "🏢 **Поддержка в выборе салона** — поможем найти салон в вашем городе\n\n"
         "👥 **Поиск модели** — организуем полноценный сеанс под контролем преподавателя для вашей уверенности\n\n"
+        "**УСЛОВИЯ:**\n\n"
         "⏱️ **Срок обучения:** 2 месяца\n"
         "💰 **Стоимость:** 79 000 рублей"
     ),
@@ -166,18 +166,18 @@ EN_TEXTS = {
     "start": (
         "🖌️ **OVERLORD AI INK (Free Trial)**\n\n"
         "**Free version of neural network** for generating images in styles:\n"
-        "- Sigilism\n"
-        "- Tribal\n"
-        "- Dark Tattoo\n\n"
+        "* Sigilism\n" # Changed from • to *
+        "* Tribal\n"   # Changed from • to * and ensured proper newline
+        "* Dark Tattoo\n\n" # Changed from • to *
         "Create unique artworks **without limitations**!\n\n"
         "**HOW TO USE:**\n\n"
         "**1.** Enter text prompt in English or use ready examples\n\n"
         "**2.** Configure generation parameters:\n"
-        "   - Sampling method: **DPM++ 2M SDE**\n"
-        "   - Steps: **20**\n"
-        "   - Width: **720**\n"
-        "   - Height: **980**\n"
-        "   - CFG Scale: **4**\n\n"
+        "   * Sampling method: **DPM++ 2M SDE**\n" # Changed from • to *
+        "   * Steps: **20**\n" # Changed from • to *
+        "   * Width: **720**\n" # Changed from • to *
+        "   * Height: **980**\n" # Changed from • to *
+        "   * CFG Scale: **4**\n\n" # Changed from • to *
         "**3.** Generate images **for free**!\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
@@ -216,9 +216,9 @@ EN_TEXTS = {
         "💰 **Price:** 99,000 rubles\n\n"
         "**FREE FIRST LESSON!**\n\n"
         "Come to a trial lesson where we will:\n"
-        "• Tell you in detail about the program\n"
-        "• Let you make your first tattoo on artificial skin\n"
-        "• You will try yourself as a **Tattoo Master**!"
+        "* Tell you in detail about the program\n" # Changed from • to *
+        "* Let you make your first tattoo on artificial skin\n" # Changed from • to *
+        "* You will try yourself as a **Tattoo Master**!" # Changed from • to *
     ),
     "online_training": (
         "**ONLINE IKONA TRAINING**\n\n"
@@ -248,7 +248,7 @@ EN_TEXTS = {
     ),
     "prompt_not_found": "⚠️ Prompt examples temporarily unavailable",
     "file_not_found": "⚠️ File not found",
-    "error": "⚠️ If the buttons do not appear, press /start",
+    "error": "⚠️ If the buttons do not appear, нажмите /start",
     "choose_action": "Choose action:",
     "what_next": "What's next?",
     "main_menu": "**MAIN MENU:**",
@@ -276,56 +276,73 @@ except Exception as e:
     logger.error(f"Ошибка загрузки prompts.json: {str(e)}")
     PROMPTS = []
 
-# Добавляем file_id для гифок
-# Это будет храниться в памяти бота и позволит избежать повторной загрузки
+# Глобальное хранилище для file_id GIF-файлов, чтобы не загружать их повторно
+# Эти ID будут сбрасываться при перезапуске бота, для постоянного хранения нужна база данных/файл
 GIF_FILE_IDS = {
     "14.gif": None,
     "9d.gif": None,
 }
 
-async def send_media_with_file_id(message, media_type: str, file_path: str, caption: str = None, reply_markup=None) -> str:
+# Вспомогательное хранилище для file_id изображений промтов
+# Эти ID будут сбрасываться при перезапуске бота, для постоянного хранения нужна база данных/файл
+PROMPT_IMAGE_FILE_IDS = {}
+
+
+async def send_media_with_file_id(message, media_type: str, file_name: str, caption: str = None, reply_markup=None) -> None:
     """
-    Отправляет медиафайл, используя file_id из глобального словаря GIF_FILE_IDS, если он доступен,
+    Отправляет медиафайл (GIF или Photo), используя file_id, если он доступен,
     иначе отправляет файл с диска и сохраняет file_id.
-    Возвращает file_id отправленного файла или None в случае ошибки.
     """
-    file_name = os.path.basename(file_path)
-    current_file_id = GIF_FILE_IDS.get(file_name)
+    # Определяем, где искать/хранить file_id
+    if media_type == "animation":
+        file_id_store = GIF_FILE_IDS
+    elif media_type == "photo":
+        file_id_store = PROMPT_IMAGE_FILE_IDS
+    else:
+        logger.error(f"Неизвестный тип медиа для send_media_with_file_id: {media_type}")
+        return
+
+    current_file_id = file_id_store.get(file_name)
+    full_file_path = os.path.join("static", file_name)
 
     if current_file_id:
         try:
             if media_type == "animation":
-                sent_message = await message.reply_animation(animation=current_file_id, caption=caption, reply_markup=reply_markup)
+                await message.reply_animation(animation=current_file_id, caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
             elif media_type == "photo":
-                sent_message = await message.reply_photo(photo=current_file_id, caption=caption, reply_markup=reply_markup)
-            logger.info(f"Медиафайл {file_name} отправлен по file_id: {current_file_id}")
-            return current_file_id
+                await message.reply_photo(photo=current_file_id, caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
+            logger.info(f"Медиафайл '{file_name}' отправлен по file_id: {current_file_id}")
+            return
         except Exception as e:
-            logger.warning(f"Ошибка при отправке медиа {file_name} по file_id ({current_file_id}): {e}. Попытка отправить с диска.")
-            GIF_FILE_IDS[file_name] = None # Сбрасываем file_id, если он недействителен
+            logger.warning(f"Ошибка при отправке медиа '{file_name}' по file_id ({current_file_id}): {e}. Попытка отправить с диска.")
+            file_id_store[file_name] = None # Сбрасываем file_id, если он недействителен
 
-    full_file_path = os.path.join("static", file_path)
+    # Если file_id не найден или недействителен, отправляем с диска
     if not os.path.exists(full_file_path):
-        logger.error(f"Файл {full_file_path} не найден.")
-        await message.reply_text(f"⚠️ Файл не найден: {caption}" if caption else "⚠️ Файл не найден.")
-        return None
+        logger.error(f"Файл '{full_file_path}' не найден.")
+        await message.reply_text(f"{caption}\n\n{RU_TEXTS['file_not_found'] if message.chat_id else EN_TEXTS['file_not_found']}", parse_mode='Markdown')
+        return
 
     try:
         with open(full_file_path, "rb") as file_to_send:
+            sent_message = None
             if media_type == "animation":
-                sent_message = await message.reply_animation(animation=InputFile(file_to_send), caption=caption, reply_markup=reply_markup)
+                sent_message = await message.reply_animation(animation=InputFile(file_to_send), caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
                 new_file_id = sent_message.animation.file_id
             elif media_type == "photo":
-                sent_message = await message.reply_photo(photo=InputFile(file_to_send), caption=caption, reply_markup=reply_markup)
-                new_file_id = sent_message.photo[-1].file_id # Берем наибольшую версию фото
+                sent_message = await message.reply_photo(photo=InputFile(file_to_send), caption=caption, reply_markup=reply_markup, parse_mode='Markdown')
+                # Telegram возвращает список размеров фото, берем последний (самый большой)
+                new_file_id = sent_message.photo[-1].file_id 
             
-            GIF_FILE_IDS[file_name] = new_file_id
-            logger.info(f"Медиафайл {file_name} отправлен с диска и сохранен file_id: {new_file_id}")
-            return new_file_id
+            if new_file_id:
+                file_id_store[file_name] = new_file_id
+                logger.info(f"Медиафайл '{file_name}' отправлен с диска и сохранен file_id: {new_file_id}")
+            else:
+                logger.error(f"Не удалось получить file_id для '{file_name}' после отправки.")
+
     except Exception as e:
-        logger.error(f"Ошибка при отправке медиафайла {full_file_path}: {e}")
-        await message.reply_text(f"⚠️ Ошибка при отправке медиа. {caption}" if caption else "⚠️ Ошибка при отправке медиа.")
-        return None
+        logger.error(f"Ошибка при отправке медиафайла '{full_file_path}': {e}")
+        await message.reply_text(f"⚠️ Ошибка при отправке медиа.\n\n{caption if caption else ''}", parse_mode='Markdown')
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -351,6 +368,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         logger.error(f"Ошибка в команде /start: {str(e)}")
         await update.message.reply_text("⚠️ Произошла ошибка. Попробуйте позже.")
 
+
 async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang: str) -> None:
     """Установка языка и показ главного меню"""
     try:
@@ -362,24 +380,22 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Отправка YouTube видео (отдельно)
+        # 1. Отправка YouTube видео
         video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
         await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
         
-        # Объединяем вступительный текст и Colab URL в одну подпись для GIF
+        # 2. Объединенный текст и ссылка COLAB в подписи GIF
         gif_path = "14.gif"
         caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
 
-        # Отправка GIF с объединенным текстом
         await send_media_with_file_id(
             query.message,
             "animation",
             gif_path,
-            caption=caption_text,
-            # No reply_markup here, will send main menu buttons separately
+            caption=caption_text
         )
         
-        # Кнопки при старте - отправляем отдельным сообщением после GIF
+        # 3. Кнопки основного меню
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -394,7 +410,6 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         
     except Exception as e:
         logger.error(f"Ошибка в set_language: {str(e)}")
-        # Отправляем сообщение об ошибке только один раз
         await query.message.reply_text("⚠️ Произошла ошибка при загрузке. Пожалуйста, попробуйте еще раз, нажав /start.")
 
 
@@ -405,6 +420,7 @@ async def set_lang_ru(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def set_lang_en(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Установка английского языка"""
     await set_language(update, context, "en")
+
 
 async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ примера промта с изображением"""
@@ -449,6 +465,7 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         logger.error(f"Ошибка в show_prompt: {str(e)}")
         await query.message.reply_text("⚠️ Не удалось загрузить пример")
 
+
 async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Показ главного меню"""
     try:
@@ -469,6 +486,7 @@ async def main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     except Exception as e:
         logger.error(f"Ошибка в main_menu: {str(e)}")
 
+
 async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Повторная отправка стартового сообщения"""
     try:
@@ -479,24 +497,22 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Отправка YouTube видео (отдельно)
+        # 1. Отправка YouTube видео
         video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
         await query.message.reply_text(f"{video_text} {videos['free_train']['url']}")
         
-        # Объединяем вступительный текст и Colab URL в одну подпись для GIF
+        # 2. Объединенный текст и ссылка COLAB в подписи GIF
         gif_path = "14.gif"
         caption_text = f"{texts['start']}\n\n🚀 {'Начните генерацию! Используйте COLAB:' if lang == 'ru' else 'Start generating! Use COLAB:'} {COLAB_URL}"
 
-        # Отправка GIF с объединенным текстом
         await send_media_with_file_id(
             query.message,
             "animation",
             gif_path,
-            caption=caption_text,
-            # No reply_markup here, will send main menu buttons separately
+            caption=caption_text
         )
         
-        # Кнопки - отправляем отдельным сообщением после GIF
+        # 3. Кнопки основного меню
         keyboard = [
             [
                 InlineKeyboardButton(texts["prompt_example"], callback_data="show_prompt"),
@@ -512,6 +528,7 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     except Exception as e:
         logger.error(f"Ошибка в free_train: {str(e)}")
 
+
 async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Информация о PRO версии"""
     try:
@@ -522,14 +539,14 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Отправка PRO видео
+        # 1. Отправка PRO видео
         video_text = "🎬 PRO обучение:" if lang == "ru" else "🎬 PRO Training:"
         await query.message.reply_text(f"{video_text} {videos['pro_version']['url']}")
         
-        # Описание преимуществ PRO в подписи GIF
+        # 2. Объединенный текст PRO и кнопка в подписи PRO GIF
         pro_gif_path = "9d.gif"
+        caption_text = f"{texts['pro_features']}\n\n{texts['pro_caption']}"
         
-        # Кнопки для PRO версии встроены в GIF
         keyboard_pro = [
             [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
         ]
@@ -539,11 +556,11 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             query.message,
             "animation",
             pro_gif_path,
-            caption=f"{texts['pro_features']}\n\n{texts['pro_caption']}", # Объединяем текст
+            caption=caption_text,
             reply_markup=reply_markup_pro
         )
 
-        # Кнопки для возврата - отправляем отдельным сообщением
+        # 3. Кнопки для возврата
         keyboard = [
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]
@@ -583,6 +600,7 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     except Exception as e:
         logger.error(f"Ошибка в ikona_training: {str(e)}")
 
+
 async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Оффлайн обучение IKONA"""
     try:
@@ -610,6 +628,7 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         
     except Exception as e:
         logger.error(f"Ошибка в offline_training: {str(e)}")
+
 
 async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Онлайн обучение IKONA"""
@@ -639,6 +658,7 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     except Exception as e:
         logger.error(f"Ошибка в online_training: {str(e)}")
 
+
 async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Контакт для записи на пробный урок"""
     try:
@@ -652,6 +672,7 @@ async def contact_for_trial(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         
     except Exception as e:
         logger.error(f"Ошибка в contact_for_trial: {str(e)}")
+
 
 async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Контакт для подробностей"""
@@ -667,6 +688,7 @@ async def contact_for_details(update: Update, context: ContextTypes.DEFAULT_TYPE
     except Exception as e:
         logger.error(f"Ошибка в contact_for_details: {str(e)}")
 
+
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка текстовых сообщений"""
     try:
@@ -675,6 +697,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.message.reply_text(texts["use_buttons"])
     except Exception as e:
         logger.error(f"Ошибка в handle_text: {str(e)}")
+
 
 def main() -> None:
     """Запуск бота"""
@@ -705,6 +728,7 @@ def main() -> None:
         
     except Exception as e:
         logger.critical(f"Ошибка запуска бота: {str(e)}")
+
 
 if __name__ == "__main__":
     main()

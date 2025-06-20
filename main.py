@@ -36,20 +36,20 @@ if not TOKEN:
 
 # Видео для русской версии
 RU_VIDEOS = {
-    "free_train": "https://youtu.be/mxxbhZ8SxTU",
-    "pro_version": "https://youtube.com/shorts/7hP9p5GnXWM?si=9Zq_pArWAZaisSKR",
-    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
-    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
-    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
+    "free_train": "OVERLORD FREE 16-9 RU.mp4",
+    "pro_version": "OVERLORD FREE 16-9 RU.mp4",
+    "ikona_training": "OVERLORD FREE 16-9 RU.mp4",
+    "offline_training": "OVERLORD FREE 16-9 RU.mp4",
+    "online_training": "OVERLORD FREE 16-9 RU.mp4"
 }
 
 # Видео для английской версии
 EN_VIDEOS = {
-    "free_train": "https://youtu.be/RcLS9A24Kss",
-    "pro_version": "https://youtube.com/shorts/_I2o5jc76Ug?si=DxRgG60LuHmbiN2w",
-    "ikona_training": "https://www.youtube.com/watch?v=GX_ZbWx0oYY",
-    "offline_training": "https://www.youtube.com/watch?v=Kopx3whZquc",
-    "online_training": "https://www.youtube.com/watch?v=10b_j5gBAg8"
+    "free_train": "OVERLORD FREE 16-9 RU.mp4",
+    "pro_version": "OVERLORD FREE 16-9 RU.mp4",
+    "ikona_training": "OVERLORD FREE 16-9 RU.mp4",
+    "offline_training": "OVERLORD FREE 16-9 RU.mp4",
+    "online_training": "OVERLORD FREE 16-9 RU.mp4"
 }
 
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
@@ -276,6 +276,47 @@ except Exception as e:
     logger.error(f"Ошибка загрузки prompts.json: {str(e)}")
     PROMPTS = []
 
+async def send_video_from_static(message, context: ContextTypes.DEFAULT_TYPE, video_key: str, caption: str = None) -> None:
+    """Отправка видео из папки static"""
+    try:
+        lang = context.user_data.get("lang", "ru")
+        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
+        video_file = videos[video_key]
+        video_path = os.path.join("static", video_file)
+        
+        cached_file_id = context.user_data["file_id_cache"].get(video_path)
+
+        if cached_file_id:
+            logger.info(f"Отправка видео из кэша: {video_path}")
+            message = await message.reply_video(
+                video=cached_file_id,
+                caption=caption,
+                parse_mode='Markdown' if caption else None
+            )
+        else:
+            try:
+                logger.info(f"Отправка видео с диска: {video_path}")
+                with open(video_path, "rb") as video_file:
+                    message = await message.reply_video(
+                        video=InputFile(video_file),
+                        caption=caption,
+                        parse_mode='Markdown' if caption else None
+                    )
+                # Сохраняем file_id в кэш
+                if message.video and message.video.file_id:
+                    context.user_data["file_id_cache"][video_path] = message.video.file_id
+                    logger.info(f"Сохранен file_id для {video_path}: {message.video.file_id}")
+            except FileNotFoundError:
+                logger.error(f"Файл {video_path} не найден")
+                if caption:
+                    await message.reply_text(caption, parse_mode='Markdown')
+            except Exception as e:
+                logger.error(f"Ошибка при отправке видео {video_path}: {str(e)}")
+                if caption:
+                    await message.reply_text(caption, parse_mode='Markdown')
+    except Exception as e:
+        logger.error(f"Ошибка в send_video_from_static: {str(e)}")
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Обработка команды /start"""
     try:
@@ -311,11 +352,9 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         # Сохраняем выбранный язык
         context.user_data["lang"] = lang
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Отправка YouTube видео
-        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
-        await query.message.reply_text(f"{video_text} {videos['free_train']}")
+        # Отправка видео обучения
+        await send_video_from_static(query.message, context, "free_train")
         
         # Комбинированный текст для GIF-сообщения
         full_caption_text = (
@@ -349,10 +388,10 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
                     logger.info(f"Сохранен file_id для {gif_path}: {message.animation.file_id}")
             except FileNotFoundError:
                 logger.error(f"Файл {gif_path} не найден")
-                await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback to text only if GIF not found
+                await query.message.reply_text(full_caption_text, parse_mode='Markdown')
             except Exception as e:
                 logger.error(f"Ошибка при отправке GIF {gif_path}: {str(e)}")
-                await query.message.reply_text(full_caption_text, parse_mode='Markdown') # Fallback on error
+                await query.message.reply_text(full_caption_text, parse_mode='Markdown')
         
         # Кнопки при старте
         keyboard = [
@@ -418,7 +457,7 @@ async def show_prompt(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                         caption=prompt_data["prompt"]
                     )
                 # Сохраняем file_id в кэш
-                if message.photo and message.photo[-1].file_id: # Telegram returns multiple sizes, pick the largest
+                if message.photo and message.photo[-1].file_id:
                     context.user_data["file_id_cache"][image_path] = message.photo[-1].file_id
                     logger.info(f"Сохранен file_id для {image_path}: {message.photo[-1].file_id}")
             except FileNotFoundError:
@@ -474,10 +513,9 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        video_text = "🎬 Видео обучения:" if lang == "ru" else "🎬 Training video:"
-        await query.message.reply_text(f"{video_text} {videos['free_train']}")
+        # Отправка видео обучения
+        await send_video_from_static(query.message, context, "free_train")
         
         # Комбинированный текст для GIF-сообщения
         full_caption_text = (
@@ -538,64 +576,22 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
-        # Отправка PRO видео
-        video_text = "🎬 PRO обучение:" if lang == "ru" else "🎬 PRO Training:"
-        await query.message.reply_text(f"{video_text} {videos['pro_version']}")
-        
-        # Комбинированный текст для GIF-сообщения
+        # Комбинированный текст для видео-сообщения
         pro_caption_text = (
             f"{texts['pro_features']}\n\n"
             f"{texts['pro_caption']}"
         )
 
-        # Отправка PRO GIF с инлайн-кнопкой
-        pro_gif_path = os.path.join("static", "9d.gif")
-        cached_file_id = context.user_data["file_id_cache"].get(pro_gif_path)
-
+        # Отправка PRO видео с инлайн-кнопкой
         keyboard_pro = [
             [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
         ]
         reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
 
-        if cached_file_id:
-            logger.info(f"Отправка PRO GIF из кэша: {pro_gif_path}")
-            message = await query.message.reply_animation(
-                animation=cached_file_id,
-                caption=pro_caption_text,
-                parse_mode='Markdown',
-                reply_markup=reply_markup_pro
-            )
-        else:
-            try:
-                logger.info(f"Отправка PRO GIF с диска: {pro_gif_path}")
-                with open(pro_gif_path, "rb") as pro_gif_file:
-                    message = await query.message.reply_animation(
-                        animation=InputFile(pro_gif_file),
-                        caption=pro_caption_text,
-                        parse_mode='Markdown',
-                        reply_markup=reply_markup_pro
-                    )
-                # Сохраняем file_id в кэш
-                if message.animation and message.animation.file_id:
-                    context.user_data["file_id_cache"][pro_gif_path] = message.animation.file_id
-                    logger.info(f"Сохранен file_id для {pro_gif_path}: {message.animation.file_id}")
-            except FileNotFoundError:
-                logger.error(f"Файл {pro_gif_path} не найден")
-                await query.message.reply_text(
-                    pro_caption_text,
-                    parse_mode='Markdown',
-                    reply_markup=reply_markup_pro
-                )
-            except Exception as e:
-                logger.error(f"Ошибка при отправке PRO GIF {pro_gif_path}: {str(e)}")
-                await query.message.reply_text(
-                    pro_caption_text,
-                    parse_mode='Markdown',
-                    reply_markup=reply_markup_pro
-                )
-
+        # Отправляем видео
+        await send_video_from_static(query.message, context, "pro_version", pro_caption_text)
+        
         # Кнопки для возврата
         keyboard = [
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
@@ -614,11 +610,9 @@ async def ikona_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка видео
-        video_text = "🎬 Обучение IKONA:" if lang == "ru" else "🎬 IKONA Training:"
-        await query.message.reply_text(f"{video_text} {videos['ikona_training']}")
+        await send_video_from_static(query.message, context, "ikona_training")
         
         # Описание обучения
         await query.message.reply_text(texts["ikona_training"], parse_mode='Markdown')
@@ -643,11 +637,9 @@ async def offline_training(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка видео
-        video_text = "🎬 Оффлайн обучение:" if lang == "ru" else "🎬 Offline training:"
-        await query.message.reply_text(f"{video_text} {videos['offline_training']}")
+        await send_video_from_static(query.message, context, "offline_training")
         
         # Описание оффлайн обучения
         await query.message.reply_text(texts["offline_training"], parse_mode='Markdown')
@@ -671,11 +663,9 @@ async def online_training(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
         
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
-        videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
         
         # Отправка видео
-        video_text = "🎬 Онлайн обучение:" if lang == "ru" else "🎬 Online training:"
-        await query.message.reply_text(f"{video_text} {videos['online_training']}")
+        await send_video_from_static(query.message, context, "online_training")
         
         # Описание онлайн обучения
         await query.message.reply_text(texts["online_training"], parse_mode='Markdown')

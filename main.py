@@ -549,7 +549,7 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 logger.info(f"Отправка GIF с диска: {gif_path}")
                 with open(gif_path, "rb") as gif_file:
                     message = await query.message.reply_animation(
-                        animation=InputFile(gif_file)),
+                        animation=InputFile(gif_file),
                         caption=full_caption_text,
                         parse_mode='Markdown'
                     )

@@ -595,7 +595,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         keyboard_pro = [
             [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
         ]
-        reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
+        reply_markup_pro = None
 
         # Отправляем видео
         await send_video_from_static(query.message, context, "pro_version", pro_caption_text)

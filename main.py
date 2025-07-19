@@ -85,6 +85,7 @@ RU_TEXTS = {
         "✅ **Приоритетные обновления**\n"
         "✅ **Множество рабочих промтов**\n\n"
         "**ПОЛНЫЙ КОНТРОЛЬ НАД ГЕНЕРАЦИЕЙ!**\n\n"
+        "[Оформить подписку](TRIBUT_URL)\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
     "ikona_training": (
@@ -191,6 +192,7 @@ EN_TEXTS = {
         "✅ **Priority updates**\n"
         "✅ **Many working prompts**\n\n"
         "**FULL CONTROL OVER GENERATION!**\n\n"
+        "[Subscrab PRO](TRIBUT_URL)\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
     "ikona_training": (

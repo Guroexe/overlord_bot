@@ -585,8 +585,11 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        # Отправляем текст PRO версии, который теперь включает ссылку
-        await query.message.reply_text(texts["pro_features"], parse_mode='Markdown')
+        # Комбинированный текст для видео-сообщения
+        pro_caption_text = texts["pro_features"]
+
+        # Отправляем видео с текстом
+        await send_video_from_static(query.message, context, "pro_version", pro_caption_text)
         
         # Кнопки для возврата
         keyboard = [

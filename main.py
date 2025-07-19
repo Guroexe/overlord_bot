@@ -85,6 +85,7 @@ RU_TEXTS = {
         "✅ **Приоритетные обновления**\n"
         "✅ **Множество рабочих промтов**\n\n"
         "**ПОЛНЫЙ КОНТРОЛЬ НАД ГЕНЕРАЦИЕЙ!**\n\n"
+        f"[🔥 ОФОРМИТЬ PRO ВЕРСИЮ]({TRIBUT_URL})\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
     "ikona_training": (
@@ -125,7 +126,7 @@ RU_TEXTS = {
         "🏢 **Поддержка в выборе салона** — поможем найти салон в вашем городе\n\n"
         "👥 **Поиск модели** — организуем полноценный сеанс под контролем преподавателя для вашей уверенности\n\n"
         "**УСЛОВИЯ:**\n\n"
-        "⏱️ **Срок обучения:** 2 месяца\n"
+        "⏱️ **Срок обучения:** 2 месяцев\n"
         "💰 **Стоимость:** 79 000 рублей"
     ),
     "contact_for_trial": (
@@ -191,6 +192,7 @@ EN_TEXTS = {
         "✅ **Priority updates**\n"
         "✅ **Many working prompts**\n\n"
         "**FULL CONTROL OVER GENERATION!**\n\n"
+        f"[🔥 GET PRO VERSION]({TRIBUT_URL})\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
     "ikona_training": (
@@ -577,22 +579,10 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        # Комбинированный текст для видео-сообщения
-        pro_caption_text = (
-            f"{texts['pro_features']}\n\n"
-            f"{texts['pro_caption']}"
-        )
-
-        # Отправка PRO видео с инлайн-кнопкой
-        keyboard_pro = [
-            [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
-        ]
-        reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
-
-        # Отправляем видео
-        await send_video_from_static(query.message, context, "pro_version", pro_caption_text)
+        # Отправляем видео с текстом, содержащим ссылку
+        await send_video_from_static(query.message, context, "pro_version", texts["pro_features"])
         
-        # Кнопки для возврата
+        # Только кнопка возврата в главное меню
         keyboard = [
             [InlineKeyboardButton(texts["back_to_main"], callback_data="main_menu")]
         ]

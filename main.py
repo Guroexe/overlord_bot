@@ -85,7 +85,7 @@ RU_TEXTS = {
         "✅ **Приоритетные обновления**\n"
         "✅ **Множество рабочих промтов**\n\n"
         "**ПОЛНЫЙ КОНТРОЛЬ НАД ГЕНЕРАЦИЕЙ!**\n\n"
-        "[Оформить подписку](TRIBUT_URL)\n\n"
+        "[Оформить подписку](https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32)\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
     "ikona_training": (
@@ -192,7 +192,7 @@ EN_TEXTS = {
         "✅ **Priority updates**\n"
         "✅ **Many working prompts**\n\n"
         "**FULL CONTROL OVER GENERATION!**\n\n"
-        "[Subscrab PRO](TRIBUT_URL)\n\n"
+        "[Subscribe PRO](https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32)\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
     "ikona_training": (

@@ -36,20 +36,20 @@ if not TOKEN:
 
 # Видео для русской версии
 RU_VIDEOS = {
-    "free_train": "https://youtu.be/mxxbhZ8SxTU",
-    "pro_version": "pro 420 ru.mp4",
-    "ikona_training": "IKONA 420.mp4",
-    "offline_training": "MARSHRUTNYI PLAN OBUCH 420.mp4",
-    "online_training": "AI 420.mp4"
+    "free_train": "free_train.mp4",
+    "pro_version": "pro.mp4",
+    "ikona_training": "ikona.mp4",
+    "offline_training": "offline.mp4",
+    "online_training": "online.mp4"
 }
 
 # Видео для английской версии
 EN_VIDEOS = {
-    "free_train": "https://youtu.be/RcLS9A24Kss",
-    "pro_version": "420 pro en.mp4",
-    "ikona_training": "IKONA 420.mp4",
-    "offline_training": "MARSHRUTNYI PLAN OBUCH 420.mp4",
-    "online_training": "AI 420.mp4"
+    "free_train": "free_train.mp4",
+    "pro_version": "pro.mp4",
+    "ikona_training": "ikona.mp4",
+    "offline_training": "offline.mp4",
+    "online_training": "online.mp4"
 }
 
 COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
@@ -85,7 +85,6 @@ RU_TEXTS = {
         "✅ **Приоритетные обновления**\n"
         "✅ **Множество рабочих промтов**\n\n"
         "**ПОЛНЫЙ КОНТРОЛЬ НАД ГЕНЕРАЦИЕЙ!**\n\n"
-        "[Оформить подписку](https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32)\n\n"
         "*(создатель - https://t.me/gurovlad)*"
     ),
     "ikona_training": (
@@ -192,7 +191,6 @@ EN_TEXTS = {
         "✅ **Priority updates**\n"
         "✅ **Many working prompts**\n\n"
         "**FULL CONTROL OVER GENERATION!**\n\n"
-        "[Subscribe PRO](https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32)\n\n"
         "*(creator - https://t.me/gurovlad)*"
     ),
     "ikona_training": (
@@ -279,18 +277,12 @@ except Exception as e:
     PROMPTS = []
 
 async def send_video_from_static(message, context: ContextTypes.DEFAULT_TYPE, video_key: str, caption: str = None) -> None:
-    """Отправка видео из папки static или YouTube ссылки"""
+    """Отправка видео из папки static"""
     try:
         lang = context.user_data.get("lang", "ru")
         videos = RU_VIDEOS if lang == "ru" else EN_VIDEOS
-        video_content = videos[video_key]
-        
-        # Если это YouTube ссылка
-        if video_key == "free_train":
-            await message.reply_text(video_content)
-            return
-            
-        video_path = os.path.join("static", video_content)
+        video_file = videos[video_key]
+        video_path = os.path.join("static", video_file)
         
         cached_file_id = context.user_data["file_id_cache"].get(video_path)
 
@@ -361,7 +353,7 @@ async def set_language(update: Update, context: ContextTypes.DEFAULT_TYPE, lang:
         context.user_data["lang"] = lang
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        # Отправка YouTube видео обучения
+        # Отправка видео обучения
         await send_video_from_static(query.message, context, "free_train")
         
         # Комбинированный текст для GIF-сообщения
@@ -522,7 +514,7 @@ async def free_train(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         lang = context.user_data.get("lang", "ru")
         texts = RU_TEXTS if lang == "ru" else EN_TEXTS
         
-        # Отправка YouTube видео обучения
+        # Отправка видео обучения
         await send_video_from_static(query.message, context, "free_train")
         
         # Комбинированный текст для GIF-сообщения
@@ -595,7 +587,7 @@ async def pro_version(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         keyboard_pro = [
             [InlineKeyboardButton(texts["get_pro"], url=TRIBUT_URL)]
         ]
-        reply_markup_pro = None
+        reply_markup_pro = InlineKeyboardMarkup(keyboard_pro)
 
         # Отправляем видео
         await send_video_from_static(query.message, context, "pro_version", pro_caption_text)

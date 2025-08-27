@@ -58,7 +58,7 @@ TRIBUT_URL = "https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82
 # Тексты для русской версии
 RU_TEXTS = {
     "start": (
-        "🖌️ **OVERLORD AI INK (Free Train)**\n\n"
+        "🖌️ **IKONA AI (FREE TRAIN)**\n\n"
         "**Бесплатная версия нейросети** для генерации изображений в стиле:\n"
         "• Sigilism\n"
         "• Tribal\n"
@@ -76,7 +76,7 @@ RU_TEXTS = {
         "*(создатель - https://t.me/gurovlad)*"
     ),
     "pro_features": (
-        "🔥 **OVERLORD AI INK PRO**\n"
+        "🔥 **IKONA AI PRO**\n"
         "**Полная версия с 30+ уникальными стилями!**\n\n"
         "**ОТЛИЧИЯ ОТ БЕСПЛАТНОЙ ВЕРСИИ:**\n\n"
         "✅ **30+ уникальных моделей** стилей\n"
@@ -152,9 +152,9 @@ RU_TEXTS = {
     "back_to_main": "Главное меню",
     "more_examples": "Ещё пример",
     "prompt_example": "Пример промта",
-    "full_version": "ПОЛНАЯ ВЕРСИЯ OVERLORD INK AI PRO +",
+    "full_version": "IKONA AI PRO",
     "ikona_training_btn": "Обучение Тату IKONA",
-    "free_train_btn": "OVERLORD AI INK (Free Train)",
+    "free_train_btn": "IKONA AI (FREE TRAIN)",
     "offline_training_btn": "Оффлайн обучение IKONA в Москве и Питере",
     "online_training_btn": "Онлайн обучение IKONA",
     "trial_lesson": "Записаться на Пробный Урок / Обучение",
@@ -165,7 +165,7 @@ RU_TEXTS = {
 # Тексты для английской версии
 EN_TEXTS = {
     "start": (
-        "🖌️ **OVERLORD AI INK (Free Trial)**\n\n"
+        "🖌️ **IKONA AI (FREE TRAIN)**\n\n"
         "**Free version of neural network** for generating images in styles:\n"
         "• Sigilism\n"
         "• Tribal\n"
@@ -183,7 +183,7 @@ EN_TEXTS = {
         "*(creator - https://t.me/gurovlad)*"
     ),
     "pro_features": (
-        "🔥 **OVERLORD AI INK PRO**\n"
+        "🔥 **IKONA AI PRO**\n"
         "**Full version with 30+ unique styles!**\n\n"
         "**DIFFERENCES FROM FREE VERSION:**\n\n"
         "✅ **30+ unique style** models\n"
@@ -259,9 +259,9 @@ EN_TEXTS = {
     "back_to_main": "Main menu",
     "more_examples": "More examples",
     "prompt_example": "Prompt example",
-    "full_version": "FULL VERSION OVERLORD INK AI PRO +",
+    "full_version": "IKONA AI PRO",
     "ikona_training_btn": "IKONA Tattoo Training",
-    "free_train_btn": "OVERLORD AI INK (Free Trial)",
+    "free_train_btn": "IKONA AI (FREE TRAIN)",
     "offline_training_btn": "Offline IKONA training in Moscow and St. Petersburg",
     "online_training_btn": "Online IKONA training",
     "trial_lesson": "Sign up for Trial Lesson / Training",
@@ -749,3 +749,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

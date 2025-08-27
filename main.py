@@ -52,7 +52,7 @@ EN_VIDEOS = {
     "online_training": "AI 420.mp4"
 }
 
-COLAB_URL = "https://colab.research.google.com/drive/1lWfrS0Jh0B2B99IJ26aincVXylaoLuDq?usp=sharing"
+COLAB_URL = "https://colab.research.google.com/drive/1s2MLarAWxfhaXcLCyoPF3uoXaWGx4urP?usp=sharing"
 TRIBUT_URL = "https://t.me/tribute/app?startapp=ep_8y0gVeOLXYRcOrfRtGTMLW8vu0C82z72WfxBEEtJz3ofJTky32"
 
 # Тексты для русской версии
@@ -749,4 +749,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
 
